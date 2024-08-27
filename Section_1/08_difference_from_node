@@ -1,0 +1,26 @@
+# Why Do We Need Node.js & How Is It Different from JavaScript in the Browser?
+
+Node.js extends the capabilities of JavaScript beyond what is possible in a browser environment. Here are some key differences and reasons why Node.js is essential for backend development:
+
+## Access to File System
+- **Node.js:** Provides APIs to interact with the file system, allowing you to read, write, delete, and manipulate files and directories on the server.
+- **Normal JavaScript:** In the browser, JavaScript is sandboxed for security reasons, meaning it cannot directly access the file system of the client device.
+
+## Networking Capabilities
+- **Node.js:** Enables the creation of web servers, handling network requests, and supports low-level networking features like creating TCP/UDP servers, handling sockets, and more.
+- **Normal JavaScript:** In the browser, JavaScript can make HTTP requests (via `fetch` or `XMLHttpRequest`), but it cannot create servers or handle low-level networking tasks.
+
+## Process Management
+- **Node.js:** Can spawn child processes, manage multiple threads, and handle system-level tasks like interacting with operating system processes.
+- **Normal JavaScript:** In the browser, JavaScript is limited to running in a single thread and cannot spawn processes or directly interact with the operating system.
+
+## Interacting with Operating System
+- **Node.js:** Can interact with the operating system to perform tasks like reading environment variables, interacting with system processes, scheduling tasks, etc.
+- **Normal JavaScript:** In the browser, JavaScript is sandboxed and cannot interact with the operating system directly, limiting its capabilities to browser-related tasks.
+
+## And More...
+Node.js provides additional features such as:
+- **Event-Driven Architecture:** Ideal for handling concurrent connections.
+- **Asynchronous Programming:** Effective for tasks such as file I/O and database queries, where waiting for completion isn't necessary.
+
+In summary, **Node.js** brings server-side functionality to JavaScript, allowing it to handle tasks that aren't possible within the browser environment. This makes it suitable for building full-fledged backends and performing system-level operations.
