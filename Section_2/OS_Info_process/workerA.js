@@ -1,6 +1,6 @@
 console.time()
-for(let a =1;a<10000000000;a++){
-    if(a % 5000000000 == 0){
+for(let a =1;a<100000000;a++){
+    if(a % 50000000 == 0){
         console.log(a)
     }
 }
