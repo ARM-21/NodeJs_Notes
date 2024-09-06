@@ -1,0 +1,22 @@
+what are Executable files?
+Executable files are files that contain instructions to be performed by the computer. They are also known as binary files because they contain binary code that the computer can execute. Executable files can be run by the operating system or other programs to perform specific tasks. Examples of executable files include programs, scripts, and batch files.
+
+types of Executable files:
+1.scripts executable files
+2.binary executable files
+
+#scripts executable files:
+Scripts are text files that contain a series of commands that are executed by an interpreter. The interpreter reads the commands in the script file and executes them one by one.
+
+#binary executable files:
+Binary executable files are files that contain machine code that is directly executable by the computer's processor. These files are compiled from source code and are specific to the operating system and processor architecture.
+
+
+extenssions of Executable files:
+1..exe --> binary executable files,windows
+2..bat --> scripts executable files,windows
+3..sh --> scripts executable files,linux
+
+
+binary executable files are in linux are located in /bin,/sbin,/usr/bin,/usr/sbin directories
+
