@@ -1,0 +1,1 @@
+sendModule.sum = (...val)=>{return val.reduce((acc, val) => acc + val, 0)};

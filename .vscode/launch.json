@@ -11,7 +11,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/os.js"
+            "program": "${workspaceFolder}/Section_3 --4/module_system/app.js",
+            "runtimeArgs": ["--require","${workspaceFolder}/Section_3 --4/module_system/math.js"]
         }
     ]
 }
