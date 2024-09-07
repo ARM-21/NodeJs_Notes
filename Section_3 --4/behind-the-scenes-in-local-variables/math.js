@@ -13,5 +13,5 @@
   console.log(sum(1,2,3))
   sendModule.a = 5;
 
-  //  console.log(module.isPreloading);
-// console.log(module.exports) 
+   console.log(module.isPreloading);
+console.log(module.exports) 
