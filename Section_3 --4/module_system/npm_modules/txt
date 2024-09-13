@@ -1,0 +1,14 @@
+-- TO create a npm package, 
+1. Create a folder with the name of the package
+2. Create a file with the name of the package 
+ also u can use any desired name it u do that you have to specify the name in the package.json file
+3. Create a package.json file
+
+
+note;-(index.js is the entry point of the package)
+
+
+
+
+import {someFIle} from 'name' --> (name is without the path and the extension)
+ (the node will start searching for the package in the node_modules folder)

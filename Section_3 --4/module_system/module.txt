@@ -1,0 +1,26 @@
+module system is divided into two parts:
+1.es6 modules
+2.commonjs modules
+
+
+#es6 modules
+ -we use import and export keywords to import and export modules.
+ -there is no local scope in es6 modules.(Module scope is there)
+ -file extension must be .mjs or .js
+ -es6 modules are always in strict mode.-->(by default)
+ -there is no such variable as 'exports,__dirname,__filename,require,or any other that was available in local varibale of common js from wrapper function(node js implementation)' in es6 modules.
+ -so to access these varaiales we have to use "import.meta" object.
+
+
+
+
+ #difference between es6 modules and commonjs modules
+  #es6 modules
+    -es6 modules are always in strict mode.
+    -es6 modules are file based.
+    -es6 modules are loaded asynchronously.
+    -we can use "await " in top level code of es6 modules.
+    -file extension must be .mjs or .js
+    -es6 modules are always in module scope.(so varaiales like exports,__dirname,__filename,require,or any other that was available in local varibale of common js from wrapper function(node js implementation) are not available in es6 modules.)
+    -They are hoisted at the top of the file.(creation phase)
+    
