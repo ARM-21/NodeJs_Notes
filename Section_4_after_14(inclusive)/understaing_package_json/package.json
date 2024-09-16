@@ -1,0 +1,8 @@
+{
+  
+  "scripts": {
+    "hi": "echo 'Hello World'",
+    "dev": "node --watch app.js"
+  }
+  
+}
