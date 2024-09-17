@@ -1,0 +1,5 @@
+what is shebang?
+shebang is a character sequence consisting of the characters number sign and exclamation mark (#!) at the beginning of a script. It is also called sha-bang, hashbang, pound-bang, or hash-pling. It is used in Unix-like operating systems to specify the interpreter that should execute the script.
+
+#!bash
+console.log('Hello, World!');
