@@ -1,0 +1,2 @@
+npx is just a file which includes bash script 
+which acutally runs the js file behind the scene to execute any file as argument
