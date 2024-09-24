@@ -1,0 +1,12 @@
+{
+    "name":"copy-arm",
+    "type": "module",
+    "main":"index.js",
+    "version": "1.0.0",
+    "description": "A simple copy content of one file to another (content can be anything and any format)",
+    "bin":"./index.js",
+    "author": {
+        "name": "manoj neupane",
+        "email": "manojneupane787@gmail.com"},
+        "license":"ISC"
+}
