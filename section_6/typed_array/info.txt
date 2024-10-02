@@ -1,0 +1,24 @@
+typed array is a category of array-like objects that provide a mechanism for reading and writing raw binary data in memory buffers.
+
+The following are the typed array types:
+
+Int8Array: 8-bit signed integer
+Uint8Array: 8-bit unsigned integer
+Uint8ClampedArray: 8-bit unsigned integer (clamped)
+
+Int16Array: 16-bit signed integer
+Uint16Array: 16-bit unsigned integer
+
+Int32Array: 32-bit signed integer
+Uint32Array: 32-bit unsigned integer
+
+BigUint64Array: 64-bit unsigned integer
+BigInt64Array: 64-bit signed integer
+
+
+Float32Array: 32-bit floating point
+Float64Array: 64-bit floating point
+
+
+
+The typed array types are similar to the ArrayBuffer type, but they allow you to read and write data in a typed manner.
