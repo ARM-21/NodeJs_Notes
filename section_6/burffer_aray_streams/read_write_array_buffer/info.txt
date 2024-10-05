@@ -1,0 +1,17 @@
+we cannpt direcctly read or write array buffer,
+so we need to use new DataView() to read or write array buffer
+
+
+##signed
+maximun range is -128 to 127
+getInt8() reads signed value from buffer
+setInt8() writes signed value to buffer
+
+##unsigned
+maximun range is 0 to 255
+maximum value than 255 will be 0 why? because it is unsigned value 
+and it will start from 0 again after 255 
+getUint8() reads unsigned value from buffer
+setUint8() writes unsigned value to buffer
+
+

@@ -1,4 +1,5 @@
-import fs, { copyFileSync } from "node:fs"
+import { watch } from "node:fs"
+import fs, { cp,rename,unlink,mkdir } from "node:fs/promises"
 import fs2 from "node:fs/promises"
 // console.dir(fs.readFileSync('./index.html','utf-8'))
 // fs.readFile('./index.html',(err,data)=>{
@@ -29,9 +30,20 @@ import fs2 from "node:fs/promises"
 
 
 
-setInterval(()=>{
-    const data = new Date();
-    const time = data.toLocaleTimeString();
-    console.log(time)
-    fs2.writeFile('./dest.txt',time)
-},1000)
+// setInterval(()=>{
+//     const data = new Date();
+//     const time = data.toLocaleTimeString();
+//     console.log(time)
+//     fs2.writeFile('./dest.txt',time)
+// },1000)
+
+// cp('./writableFile.txt','./copy_terminal')
+// unlink('./writtableFile.txt')
+
+
+// mkdir('mkDir')
+
+// watch('dest.txt',(e)=>{
+//     console.log(e)
+// })
+
