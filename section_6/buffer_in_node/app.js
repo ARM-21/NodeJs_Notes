@@ -37,3 +37,26 @@ import { Buffer, constants } from 'buffer';
 */
 
 console.log(constants.MAX_LENGTH)
+
+
+/** different methods in Buffer */
+/**
+ * write() method is used to write the data to the buffer
+ * subarray() is same as slice() method in array
+ * copy(target) method is used to copy the data from one buffer to another buffer
+ * 
+ */
+
+const aBuffer = Buffer.from('hello world');
+
+const bBuffer = Buffer.alloc(5);
+
+
+aBuffer.copy(bBuffer, 0, 0, 5);
+
+
+console.log(bBuffer.toString())
+
+
+/**includes() is used to search a given string in a buffer */
+console.log(aBuffer.includes('world','1')) //true
