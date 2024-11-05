@@ -17,7 +17,7 @@ In this state, the stream buffers all written data until it is explicitly uncork
 
 - **Check**: Use the `writableCorked` property.
   ```js
-  console.log(stream.writableCorked); // 0 means not corked, > 0 means corked
+  console.log(stream.writableCorked); // 0 means not corked, > 1 means corked
   ```
 
 ## 3. Ended State
