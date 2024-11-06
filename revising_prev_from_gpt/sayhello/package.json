@@ -1,0 +1,17 @@
+{
+  "name": "sayhellotome",
+  "version": "1.0.0",
+  "description": "sayhello",
+  "main": "greet.js",
+  "bin": {
+    "greet": "./greet.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "manoj neupane",
+  "license": "ISC",
+  "dependencies": {
+    "sayhellotome": "^1.0.0"
+  }
+}
