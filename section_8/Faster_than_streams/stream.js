@@ -1,17 +1,33 @@
 // import React from 'react';
-import fs from "node:fs";
+import fs, { write } from "node:fs";
 
 export default function createWritableStm(path) {
-    const buff = Buffer.allocUnsafe(64 * 1024);
+    
+    const buff = Buffer.allocUnsafe(4);
     console.time()
     let fd = fs.openSync(path,"w");
-    for(let i=0;i<5000;i++){
+    let bytesWritten = 0;
+    for(let i=0;i<10;i++){
         // fs.writeSync(fd,i + ",")
+        // if(bytesWritten % 64 ){
 
-        buff.write(`${i}`)
+        /**returns currently written byte not total byte */
+
+        let byte = buff.write(`${i}, `,bytesWritten)
+        bytesWritten = bytesWritten + byte;
+        if(buff.byteLength == bytesWritten){
+            console.log(bytesWritten)
+            fs.writeSync(fd,buff)
+            bytesWritten = 0;
+        }
+            // console.log(byte)
+        // }
+
+
     }
-    fs.closeSync(fd)
-    console.log(buff)
+    console.log(bytesWritten)
+    // fs.closeSync(fd)
+    // console.log(buff)
     fs.closeSync(fd)
     console.timeEnd()
 
