@@ -7,24 +7,35 @@ export default function createWritableStm(path) {
     console.time()
     let fd = fs.openSync(path,"w");
     let bytesWritten = 0;
-    for(let i=0;i<10;i++){
+    let remainingStr = '';
+    for(let i=1;i<=10;i++){
         // fs.writeSync(fd,i + ",")
         // if(bytesWritten % 64 ){
 
         /**returns currently written byte not total byte */
 
-        let byte = buff.write(`${i}, `,bytesWritten)
+        let str = `${i}, `;
+        //we did this instead of using write(remainingStr + str, byteswritteen) because extra space was excluded duing third loop
+        str = remainingStr + str;
+
+        let byte = buff.write( str,bytesWritten);
         bytesWritten = bytesWritten + byte;
         if(buff.byteLength == bytesWritten){
-            console.log(bytesWritten)
+            console.log(bytesWritten)           
             fs.writeSync(fd,buff)
+                remainingStr='';
             bytesWritten = 0;
         }
-            // console.log(byte)
+        // console.log(byte)
+        if(str.length > byte){
+             remainingStr = str.slice(byte);
+            // fs.writeSync(fd,remainingStr)
+        }
         // }
 
 
     }
+    fs.writeSync(fd,remainingStr)
     console.log(bytesWritten)
     // fs.closeSync(fd)
     // console.log(buff)
