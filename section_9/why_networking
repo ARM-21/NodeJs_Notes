@@ -1,0 +1,7 @@
+backend is based on the network, so it is important to understand how it works. This section will cover the basics of networking, including how data is transmitted over the network, how devices communicate with each other, and how networks are structured. Understanding these concepts will help you troubleshoot network issues and design more efficient networks.
+
+although, there is cli application development using backend technology
+
+stream line deployment
+efficient client server communication
+scalability (cluster, load balancing)

@@ -26,4 +26,27 @@ input.addEventListener("change", async () => {
 // console.log(readedContent.value)
 // console.log(decoder.decode(readedContent.value))
 
-});
+}); 
+
+
+const data = await fetch("http://localhost:4000")
+const image = data.blob()
+// const file = new File([image], "image.webp")
+const urlimage = new URL(image)
+const url = urlimage.createObjectURL(urlimage)
+const div = document.createElement("div")
+div.innerHTML = `<img src="${url}" alt="image">`
+document.body.append(div)
+// const b = new Blob()
+// for await (const chnk of data.body) {
+// console.log(decoder.decode(chnk))
+// // }
+// const reader =  data.body.getReader()
+// while(true){
+//   const {value, done} = await reader.read()
+//   if(done) break;
+//   console.log(decoder.decode(value))
+// }
+
+// console.log(data)
+
