@@ -1,0 +1,4 @@
+cgnat is used to configure the CGNAT (Carrier Grade NAT) feature on the router. The CGNAT feature allows the router to translate the private IP addresses of the internal network to a single public IP address. This allows multiple devices on the internal network to share the same public IP address for internet access.
+
+
+public ip is shown in myip.com which is the ip of ISP
