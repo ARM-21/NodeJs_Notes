@@ -16,9 +16,11 @@ process.on('error',()=>{
 
 client.on('data',(data)=>{
     if(data.toString() == 'EOF'){
-        process
+        process.abort()
     }
+    console.log(data.toString())
 })
+
 
 client.on('error',()=>{
     console.log("process aborted")
