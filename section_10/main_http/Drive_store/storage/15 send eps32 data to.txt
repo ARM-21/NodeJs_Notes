@@ -1,0 +1,37 @@
+-----------------------------363331697517047574234017143200
+Content-Disposition: form-data; name="fileName"; filename="15 send eps32 data to.txt"
+Content-Type: text/plain
+
+15.send eps32 data to website
+ objective: to send data to the website
+ Action :used wifi.h library to connect the wifi which assignes the particular ip to the esp32, 	after that create server at port 8000 to send the waste level data to the website in json format using http protocol
+  Expected Outcome: data must be received to website in json format containing the wastelevel of each dustbin
+  Actual Outcome:
+  data has received to the website in json
+  
+14. Run the backend server
+objective: to run the backend server and listen at a http://ip/post-email url
+Action: used nodejs to create http server at port 4000 and used a express library to create "/post-email" endpoint.
+Expected Outcome: server should be running at port 4000 and should listen to particular endpoint
+Actual Outcome:
+ server is running  sucessfully and listening to endpoint
+ 
+12. Send data to the backend server
+Objective: to send the average of waste level to the backend server
+Action: send request to the server with json data containing waste level of each dustbin
+Expected Outcome:
+data must sent  to the server.
+Actual Outcome:
+data received sucessfully to the server
+ 
+13. send mail to organization's mail
+Objective: to send the mail to the organization email if average exceeds 50%
+Action: send request to the http://ip/post-email with json data containing waste level of each dustbin to send the mail with the alert.
+Expected Outcome:
+message must sent email to the email of organization.
+Actual Outcome:
+message received sucessfully to the mail
+
+
+
+-----------------------------363331697517047574234017143200--

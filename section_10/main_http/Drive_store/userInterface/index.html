@@ -9,14 +9,15 @@
 <body>
     <h1>Your Files</h1>
     <form action='http://192.168.100.7:4000/' method='post' enctype='multipart/form-data'>
-    <input type='text' required placeholder = 'File name'></input> 
+    <input type='text' required placeholder = 'File name' name="namefile" ></input> 
     </br>
     </br>
-    <input type='file' required></input>
+    <input type='file' name='fileName' required></input>
     <input type='submit' value='Add'></input>
     </form>
     <ul>
     ${filesDynamic}
+    
     </ul>
 </body>
 </html>
