@@ -1,0 +1,129 @@
+/* Container for the file list */
+.your-files {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 0 10px gray;
+  }
+  
+  /* Styling the file list */
+  .file-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  /* Individual file item */
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    flex-wrap: wrap;
+  }
+  
+  /* File name styling */
+  .file-name {
+    flex: 1;
+    word-wrap: break-word;
+    margin-right: 10px;
+  }
+  
+  /* Container for action buttons */
+  .file-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* Styling for buttons */
+  .file-btn button {
+    padding: 8px 10px;
+    border: none;
+    background-color: #2878cd;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .file-btn button:hover {
+    background-color: #0056b3;
+  }
+  /* For tablets and below */
+@media (max-width: 768px) {
+    .file-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .file-actions {
+      width: 100%;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+  
+    .file-btn button {
+      /* flex: 1; */
+      text-align: center;
+    }
+  }
+  
+  /* For mobile devices */
+  @media (max-width: 480px) {
+    .file-name {
+      margin-bottom: 10px;
+    }
+  
+    .file-actions {
+
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+      width: 100%;
+    }
+  
+    .file-btn button {
+      width: 100%;
+    }
+  }
+  .your-files {
+    padding: 20px;
+  }
+  
+  .file-list {
+    list-style-type: none;
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center; */
+    padding: 0;
+   
+  }
+  
+  .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .file-name {
+    flex: 1;
+    margin: 0;
+    font-size: 16px;
+    word-wrap: break-word;
+  }
+  
+  .file-actions {
+    display: flex;
+    
+    gap: 10px;
+  }
+  
+  .file-btn button {
+    width: 80px;
+    padding: 5px 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+    

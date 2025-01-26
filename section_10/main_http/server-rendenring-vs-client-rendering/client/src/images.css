@@ -1,0 +1,108 @@
+/* Main container styling */
+.images-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Heading styles */
+  h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Image list styles */
+  .images-list {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+  }
+  
+  /* Image item container */
+  .image-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    word-break: break-word; /* Prevents text overflow */
+  }
+  
+  /* Image name styling */
+  .image-name {
+    flex: 1;
+    min-width: 150px;
+    max-width: 60%;
+    font-size: 16px;
+    font-weight: 500;
+    color: #222;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Button container */
+  .image-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  /* Button styles */
+  .image-btn button {
+    padding: 8px 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s;
+    font-size: 14px;
+  }
+  
+  .image-btn button:hover {
+    background: #0056b3;
+  }
+  
+  /* Loading text */
+  .loading-text {
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+  }
+  
+  /* Responsive Design */
+  @media screen and (max-width: 600px) {
+    .image-item {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;
+    }
+  
+    .image-name {
+      max-width: 100%;
+    }
+  
+    .image-actions {
+      justify-content: flex-start;
+      width: 100%;
+    }
+  
+    .image-btn button {
+      width: 100%;
+    }
+  }
+  
