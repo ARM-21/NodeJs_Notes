@@ -6,6 +6,7 @@ import './yourfile.css';
 import './addfile.css'; // Importing CSS file
 
 export default function Home() {
+  
   return (
     <div>
       <AddFile/>

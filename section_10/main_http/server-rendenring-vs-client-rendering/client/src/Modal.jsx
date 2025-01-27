@@ -1,24 +1,16 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react'
+import { createPortal } from 'react-dom';
 
-const Modal = forwardRef(function Modal(ref,prop) {
-    const inputRef = useRef(null);
-    useImperativeHandle(ref,()=>{
-       
-       return{
-        showModal(){
-            inputRef.current.showModal()
-        }
-       } 
-    },[])
+const Modal = forwardRef(function Modal(prop,ref) {
 
   return (
     <>
-    <dialog id="modal"  ref={inputRef}>
-    {prop.progress? <h1>Uploading your file</h1>: <h1>file Uploded sucessfully</h1>}
-   
-    <button id="closeModal">Close modal</button>
+    <dialog id="modal" ref={ref}>
+
+     <h1>{prop.text}</h1>
+     {prop.value?<p>{prop.value.toFixed(2)} %</p>:null}
+   {prop.value == 100? <button id="closeModal" onClick={prop.onclose}>Close</button>:null} 
   </dialog>
-  <button id="openModal">Show modal</button>
   </>
   )
 })

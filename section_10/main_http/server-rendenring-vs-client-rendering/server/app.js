@@ -44,8 +44,9 @@ async function handleRequest(req,res){
         handleUpload(req,res)
         return
     }
-    const fd = await open(`.${openURL}`)
-    const stat = (await fd.stat())
+    try{
+        const fd = await open(`.${openURL}`)
+        const stat = (await fd.stat())
 
     if(action[1] == 'delete'){
         const isDirectory = stat.isDirectory()
@@ -75,6 +76,11 @@ async function handleRequest(req,res){
     readStream.on('close',()=>{
         fd.close()
     })
+    }catch {
+        res.end('error try again')
+    }
+   
+
 
 }
 //handles delete
@@ -91,12 +97,12 @@ async function handleUpload(req,res) {
     const stream = createWriteStream(`./storage/${req.headers.filename}`)
    req.pipe(stream)
     
-req.on('end',()=>{console.log('uploaded')})
+req.on('end',()=>{console.log('uploaded'); stream.close()})
     req.on('close',()=>{
         res.end('uploaded sucessfully')
     })
     
-}
+} 
 
 
 
