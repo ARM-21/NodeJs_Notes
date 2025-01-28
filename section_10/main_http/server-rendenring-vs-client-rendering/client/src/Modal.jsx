@@ -9,7 +9,7 @@ const Modal = forwardRef(function Modal(prop,ref) {
 
      <h1>{prop.text}</h1>
      {prop.value?<p>{prop.value.toFixed(2)} %</p>:null}
-   {prop.value == 100? <button id="closeModal" onClick={prop.onclose}>Close</button>:null} 
+   {prop.value == 100? <button id="closeModal" onClick={()=>{prop.onclose();prop.getDirectoryInfo() }}>Close</button>:null} 
   </dialog>
   </>
   )

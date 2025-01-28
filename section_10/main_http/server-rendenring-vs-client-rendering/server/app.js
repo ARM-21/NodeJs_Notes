@@ -8,6 +8,8 @@ import {fileTypeFromBuffer, fileTypeFromStream} from "file-type"
 const server = http.createServer(async (req,res)=>{
     res.setHeader('Access-Control-Allow-Origin','*')
     res.setHeader('Access-Control-Allow-Headers','*')
+    res.setHeader('Access-Control-Allow-Methods','DELETE')
+     
     //read index file as buffer and server it
     if(req.url == '/'){
         readStorage(res)
@@ -43,17 +45,27 @@ async function handleRequest(req,res){
     if(req.method.toLowerCase() == 'post'){
         handleUpload(req,res)
         return
+
     }
+    if(req.method.toLowerCase() == 'delete'){
+        
+          try{
+            const fd = await open(`.${openURL}`)
+            const stat = (await fd.stat())
+          const isDirectory = stat.isDirectory()
+              handleDelete(isDirectory,openURL,res)
+          }catch(err){
+              res.end('file not found')
+          }
+          res.end('delete sucessfully')
+          return
+      }
+
     try{
         const fd = await open(`.${openURL}`)
         const stat = (await fd.stat())
 
-    if(action[1] == 'delete'){
-        const isDirectory = stat.isDirectory()
-        handleDelete(isDirectory,openURL)
-        res.end('delete sucessfully')
-        return
-    }
+
 // if a request is a directory
     if(stat.isDirectory()){
         console.log('isdirectory')
@@ -73,7 +85,7 @@ async function handleRequest(req,res){
     else{
         readStream.pipe(res)
     }
-    readStream.on('close',()=>{
+    readStream.on('end',()=>{
         fd.close()
     })
     }catch {
@@ -84,7 +96,8 @@ async function handleRequest(req,res){
 
 }
 //handles delete
-async function handleDelete(isDirectory,openURL) {
+async function handleDelete(isDirectory,openURL,res) {
+
     if(isDirectory){
         fsPromises.rmdir(`.${openURL}`, { recursive: true, force: true })
     }

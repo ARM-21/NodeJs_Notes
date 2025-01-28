@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import Modal from './Modal';
 
 
-export default function AddFile() {
+export default function AddFile({getDirectoryInfo}) {
   const [showModal, setShowModal] = useState(false);
   const refModal = useRef(null)
   const [progress,setProgress] = useState(0)
@@ -21,9 +21,7 @@ export default function AddFile() {
     const xhr = new XMLHttpRequest();
     xhr.open('POST','http://192.168.100.7:4000/storage?action=add',true)
     xhr.setRequestHeader('filename',file.name)
-   xhr.addEventListener("progress",()=>{
-    console.log(xhr.progress)
-   })
+
    xhr.upload.addEventListener('progress',(prog)=>{
       const progValue = (prog.loaded/prog.total) * 100  
       setProgress(progValue)
@@ -32,10 +30,9 @@ export default function AddFile() {
     setUploadText(xhr.response)
   })
     xhr.send(file)
-    
-    
-    
+  
     setShowModal(true)
+    getDirectoryInfo()
   }
 
   const handleCloseModal = () => {
@@ -56,7 +53,7 @@ export default function AddFile() {
     <>
       {showModal
         ? createPortal(
-            <Modal progress={showModal} ref={refModal} value={progress} onclose= {handleCloseModal}  text = {uploadText} setShowModal={setShowModal} />, 
+            <Modal progress={showModal} ref={refModal} value={progress} onclose= {handleCloseModal}  text = {uploadText} setShowModal={setShowModal} getDirectoryInfo={getDirectoryInfo} />, 
             document.getElementById('root')
           )
         : <div className='user-add-file'>
