@@ -1,11 +1,9 @@
- import AddFile from "./AddFile";
- import YourFiles from "./YourFiles";
+
+ import YourFiles from "./components/yourfiles/YourFiles";
  import Home from "./Home";
  import  { createBrowserRouter, RouterProvider } from "react-router"
-
-
- import './app.css'
-import Images from "./Images";
+import Images from "./routes/images/Images";
+import './app.css'
  
  const routes = createBrowserRouter([{
   path:'/',

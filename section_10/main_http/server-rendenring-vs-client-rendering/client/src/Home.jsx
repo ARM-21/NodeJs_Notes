@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
-import AddFile from './AddFile'
+import React, { useEffect, useState } from 'react'
+import AddFile from './components/AddUserFile/AddFile.jsx'
 import { Outlet } from 'react-router'
-import './yourfile.css'; 
-import './addfile.css'; // Importing CSS file
+// Importing CSS file
 
 export default function Home() {
   const [files, setFiles] = useState([]);
@@ -14,6 +13,9 @@ export default function Home() {
     });
   }
   
+  useEffect(()=>{
+    getDirectoryInfo()
+  },[])
   return (
     <div>
       <AddFile getDirectoryInfo={getDirectoryInfo}/>
