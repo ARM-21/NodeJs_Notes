@@ -11,6 +11,8 @@ export default function YourFiles() {
   const { files, setFiles, getDirectoryInfo } = useOutletContext();
   const [deleteModal, setDeleteModal] = useState({ deleteFile: false, showModal: false, filename: '' });
   const [isRename, setRename] = useState({filename:'',showModal:false})
+  const [search,setSearch] = useState('');
+  const [load,setLoad] = useState('Getting your files...')
   //delete modal ref
   const deleteModalRef = useRef(null)
   const renameRef = useRef(null)
@@ -59,6 +61,25 @@ export default function YourFiles() {
     getDirectoryInfo()
 
   }
+  function handleSearch(e){
+    const inputValue = e.target.value;
+    console.log(inputValue)
+    setSearch(e.target.value)
+    if(inputValue.length > 1){
+      const filteredFiles = files.filter((file)=>{
+        return file.includes(inputValue)})
+      console.log('from inside',filteredFiles)
+      if(filteredFiles.length == 0){
+        setLoad('File Not Found')
+      }
+      setFiles(filteredFiles)
+    }
+    else{
+      // setFiles( files)
+      getDirectoryInfo()
+    }
+   
+  }
 
   return <>
 
@@ -68,7 +89,10 @@ export default function YourFiles() {
       deleteModal.showModal ? 
     createPortal(<DeleteModal handleNo={handleNo} handleYes={handleYes} ref={deleteModalRef} getDirectoryInfo={getDirectoryInfo}/>, 
     document.getElementById('root'))
-      : <div className='your-files'>
+      : 
+      
+      <div className='your-files' style={{display:'flex',flexDirection:'column'}}>
+          <input type='text' placeholder='Enter Name for Search' onChange={(e)=>{handleSearch(e)}} style={{marginInline:'auto',padding:'5px 2px 2px 8px',borderRadius:'5px'}}/>
         <h1>Your Files</h1>
         <ul className='file-list'>
           {/* reading list of available files from storage folder */}
@@ -101,7 +125,7 @@ export default function YourFiles() {
               </div>
             ))
           ) : (
-            <p className='loading-text'>Getting your files...</p>
+            <p className='loading-text'>{load}</p>
           )}
         </ul>
       </div>
