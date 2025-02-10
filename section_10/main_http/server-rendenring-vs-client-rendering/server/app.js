@@ -47,21 +47,22 @@ async function handleRequest(req, res) {
         return
 
     }
-    if (action[1] == 'rename') {
+   else if (req.method.toLowerCase() == 'patch') {
         let renameFile = req.headers.filename;
-         req.on('data',(chnk)=>{
-            renameFile = JSON.parse(chnk.toString())
-        console.log('data',JSON.parse(chnk.toString()))
-            })
+        //  req.on('data',(chnk)=>{
+        //     renameFile = JSON.parse(chnk.toString())
+        // console.log('data',JSON.parse(chnk.toString()))
+        //     })
     // try{
-        console.log('success')
+        console.log(renameFile)
         res.setHeader('Content-Length','25')
-        res.end('File rename Successfull')
+        // res.end('File rename Successfull')
       
        handleRename(renameFile,openURL,req,res);
        return
     }
 
+else{
 
     try {
         const fd = await open(`.${openURL}`)
@@ -93,7 +94,7 @@ async function handleRequest(req, res) {
         }
        
         else if (req.method.toLowerCase() == 'delete') {
-
+            res.setHeader('Content-Length','21')
             try {
                 const fd = await open(`.${openURL}`)
                 const stat = (await fd.stat())
@@ -118,6 +119,7 @@ async function handleRequest(req, res) {
         res.end('error try again')
     }
 
+}
 
 
 
@@ -134,6 +136,7 @@ async function handleRename(filename,openURL,req,res){
     console.log('renamePath',renamePath)
    try{
     await rename(`.${openURL}`,`${renamePath}`)
+    res.end('File Renamed Successfully')
    }catch(err){
         res.end('error occured try again')
         console.log('error occured while naming')
@@ -171,7 +174,7 @@ async function readStorage(res, dir) {
     res.end(JSON.stringify(userResources))
 }
 
-server.listen(4000, '192.168.100.7', () => {
+server.listen(4000,'192.168.1.114', (cl) => {
     console.log('server started')
 })
 

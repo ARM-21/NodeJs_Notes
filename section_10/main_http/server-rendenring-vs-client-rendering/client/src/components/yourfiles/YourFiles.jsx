@@ -4,11 +4,12 @@ import { useOutletContext } from 'react-router';
 import DeleteModal from '../delete/DeleteModal';
 import RenameModal from '../rename/RenameModal'
 
+
 // Importing CSS file
 import './yourfile.css'
 export default function YourFiles() {
   //getting values sent from home all the state are up
-  const { files, setFiles, getDirectoryInfo } = useOutletContext();
+  const { files, setFiles, getDirectoryInfo,url } = useOutletContext();
   const [deleteModal, setDeleteModal] = useState({ deleteFile: false, showModal: false, filename: '' });
   const [isRename, setRename] = useState({filename:'',showModal:false})
   const [search,setSearch] = useState('');
@@ -54,7 +55,7 @@ export default function YourFiles() {
   //alternative way to create delete 
   async function handleDelete(list) {
     console.log("filename", list)
-    const response = await fetch(`http://192.168.100.7:4000/storage/${list}?action=delete`, {
+    const response = await fetch(`http://${url}:4000/storage/${list}?action=delete`, {
       method: 'DELETE',
       headers: { filename: list }
     })
@@ -84,7 +85,7 @@ export default function YourFiles() {
   return <>
 
 
-    {  isRename.showModal? createPortal(<RenameModal  rename={setRename} ref={renameRef} filename={isRename.filename} getDirectoryInfo={getDirectoryInfo}/>,
+    {  isRename.showModal? createPortal(<RenameModal  rename={setRename} ref={renameRef} filename={isRename.filename} getDirectoryInfo={getDirectoryInfo} url={url}/>,
       document.getElementById('root')) :
       deleteModal.showModal ? 
     createPortal(<DeleteModal handleNo={handleNo} handleYes={handleYes} ref={deleteModalRef} getDirectoryInfo={getDirectoryInfo}/>, 
@@ -104,16 +105,16 @@ export default function YourFiles() {
                   {list === 'images' ? (
                     <>
                       <a href={`/images`} className='file-btn'> <button>Preview</button></a>
-                      <a href={`http://192.168.100.7:4000/storage/${list}?action=download`} className='file-btn'> <button>Download</button></a>
+                      <a href={`http://${url}:4000/storage/${list}?action=download`} className='file-btn'> <button>Download</button></a>
                       <a onClick={() => { setDeleteModal((prev) => { return { ...prev, showModal: true, filename: list } }) }} className='file-btn'> <button>Delete</button></a>
                       <a onClick={() => { setRename(true) }} className='file-btn'> <button>Rename</button></a>
                       {/* alternative */}
-                      {/* href={`http://192.168.100.7:4000/storage/${list}?action=delete`} */}
+                      {/* href={`http://192.168.1.114:4000/storage/${list}?action=delete`} */}
                     </>
                   ) : (
                     <>
-                      <a href={`http://192.168.100.7:4000/storage/${list}?action=open`} className='file-btn'> <button>Preview</button></a>
-                      <a href={`http://192.168.100.7:4000/storage/${list}?action=download`} className='file-btn'> <button>Download</button></a>
+                      <a href={`http://${url}:4000/storage/${list}?action=open`} className='file-btn'> <button>Preview</button></a>
+                      <a href={`http://${url}:4000/storage/${list}?action=download`} className='file-btn'> <button>Download</button></a>
                       <a onClick={() => { setDeleteModal((prev) => { return { ...prev, showModal: true, filename: list } }) }} className='file-btn'> <button>Delete</button></a>
                       <a onClick={() => { setRename((prev)=>{return {filename:list,showModal:true}
                       }) }} className='file-btn'> <button>Rename</button></a>

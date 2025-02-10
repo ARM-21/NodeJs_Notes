@@ -32,7 +32,7 @@ export default function AddFile({getDirectoryInfo}) {
 
     //creating a xhr similar to fetch uses callback (older than fetch promise based)
     const xhr = new XMLHttpRequest();
-    xhr.open('POST','http://192.168.100.7:4000/storage?action=add',true)
+    xhr.open('POST','http://192.168.1.114:4000/storage?action=add',true)
     xhr.setRequestHeader('filename',file.name)
 
    xhr.upload.addEventListener('progress',(prog)=>{
