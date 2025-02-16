@@ -15,10 +15,10 @@ const port = 4000;
 //         }catch(err){
 //             next(err)
 //         }
-        
+
 //         //this next refers to the next function so whereever we call resulting in executing it
 //         // throw new Error('hello this is a custom error')
-        
+
 //     },
 //     //request handler middleware 2 params
 //     (req, res) => {
@@ -42,25 +42,39 @@ const port = 4000;
 
 
 //**handling different requests using express */
+/**checking rquestes logging */
+/**custom global middleware its order matters */
+// app.use((req, res, next) => {
+//     console.log('global middleware')
+//     req.on('data', (chnk) => {
+//         const data = chnk.toString()
+//         req.body = data;
+//         next()
+//     })
+//     // res.end('global middleware')
 
-app.get('/',(req,res)=>{
+// })
+
+/**express middleware provide same functionality as above*/
+
+app.use(express.json())
+
+app.get('/', (req, res) => {
     res.end('home page')
 })
-
-app.get('/login',(req,res)=>{
+/**login */
+app.get('/login', (req, res) => {
     res.end('logged in successfull')
 })
 
-app.post('/',(req,res)=>{
-    console.log(JSON.parse(req.body))
-    throw new Error('error generated')
+app.post('/', (req, res) => {
+    // console.log(JSON.parse(req.body))
+    // throw new Error('error generated')
+    console.log( req.body)
     res.end('posted end')
 })
 
-app.use((err,req,res,next)=>{
-    res.end(err.message)
-})
 
-app.listen(port,()=>{
-    console.log('server is running on '+ port)
+app.listen(port, () => {
+    console.log('server is running on ' + port)
 })
