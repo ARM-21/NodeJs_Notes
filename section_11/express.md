@@ -58,3 +58,11 @@ In simple words, middleware is a function that runs between the request and resp
            next();
        });
    });
+
+## middle available in express
+    app.use() - to use the middleware
+    app.use(express.json()) - to parse the json body of the request
+    app.use(express.static('public')) - to serve the static files
+    res.sendFile() - to send the file from a inside route
+
+accept-range: bytes; - to accept the in (requests) range of bytes in the request (to play the video from the middle) 
