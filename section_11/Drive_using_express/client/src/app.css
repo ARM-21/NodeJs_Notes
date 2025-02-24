@@ -1,0 +1,60 @@
+.body{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+#root{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 50vh; */
+}
+
+/* style for user file add section */
+.user_add_file input:first-child{
+    border: none;
+    border-bottom: navajowhite;
+    box-shadow: 0 0 10px slategray;
+    font-size: 1.5rem;
+    
+}
+.user_add_file form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+.user_add_file input:first-child:focus{
+    /* border: none; */
+    outline-color: rgb(105, 105, 124);
+    outline-width:0.2px ;
+    color: aliceblue;
+    border-bottom: rgb(54, 66, 227);
+   
+}
+#userFile{
+ outline: none;
+ /* visibility: hidden; */
+
+}
+.user_add_file form>input[type='submit']{
+    width: 80px;
+    font-size: 20px;
+    background-color: rgb(115, 115, 135);
+    color: white;
+}
+.user_add_file form>input[type='submit']:hover{
+    width: 80px;
+    font-size: 20px;
+    color: rgb(115, 115, 135);
+    background-color: white;
+    border: 2px 2px black;
+}
+
+
+/* main container */
+#main_container{
+display: flex;
+flex-direction: column;
+}
