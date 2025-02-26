@@ -65,7 +65,7 @@ app.delete('/:filename', async (req, res, next) => {
 })
 
 app.patch('/:filename', async (req, res, next) => {
-    console.log('patching')
+    console.log(req.body)
     const filename = req.params.filename
     console.log(filename)
     try{
@@ -79,9 +79,10 @@ app.patch('/:filename', async (req, res, next) => {
 
 })
 //file uploading 
-app.post('/storage',async (req,res)=>{
+app.post('/:filename',async (req,res)=>{
+   
     try{
-        const writeStream = fs.createWriteStream(`./storage/${req.header('filename')}`)
+        const writeStream = fs.createWriteStream(`./storage/${req.params.filename}`)
         req.pipe(writeStream)
         res.end('File Uploaded Successfully')
     }catch(err){

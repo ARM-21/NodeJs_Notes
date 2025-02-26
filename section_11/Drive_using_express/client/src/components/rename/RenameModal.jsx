@@ -12,7 +12,7 @@ async function handleRename()  {
     }
     const response = await fetch(`http://${props.url}:4000/${props.filename}?action=rename`,
     {method:'PATCH',
-      headers:{filename:newName },
+      headers:{filename:newName, "Content-Type":"application/json"},
       body:JSON.stringify({newName})
     });
     console.log('rename dialog off')
