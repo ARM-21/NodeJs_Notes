@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import Modal from '../uploadConfirm/Modal';
 import UploadConfirm from '../uploadConfirm/UploadConfirm';
 import './addfile.css'
+import { useParams } from 'react-router';
 
 
-export default function AddFile({getDirectoryInfo}) {
+export default function AddFile({getDirectoryInfo,getDirectoryData}) {
 //states 
     //uplaod modal information store
   const [showModal, setShowModal] = useState(false);
@@ -18,21 +19,19 @@ export default function AddFile({getDirectoryInfo}) {
  //references for upload and delete modal
   const refModal = useRef(null)
    const uploadModalRef = useRef(null)
- 
+   const directoryName = useParams();
    //handling when user adds or change the files
+   const addFileParams = useParams();
+   console.log(addFileParams)
   async function handleAdd(e) {
     const file = e.target.files[0];
+    const nestedDirectory = directoryName.name? '/'+directoryName.name:'';
+    const multiLevelPath = directoryName['*']?'/'+directoryName['*']:'';
     setFileDetails({file:file.name,size:file.size/1024*1024,showModal:false})
     if (!file) return;
-    // const response = await fetch('http://192.168.100.7:4000/storage?action=add', {
-    //   method: 'POST',
-    //   headers: { filename: file.name },
-    //   body: file,
-    // });
-
     //creating a xhr similar to fetch uses callback (older than fetch promise based)
     const xhr = new XMLHttpRequest();
-    xhr.open('POST',`http://192.168.100.7:4000/${file.name}?action=add`,true)
+    xhr.open('POST',`http://192.168.100.7:4000/files${nestedDirectory}${multiLevelPath}/${file.name}?action=add`,true)
     // xhr.setRequestHeader('filename',file.name)
 
    xhr.upload.addEventListener('progress',(prog)=>{
@@ -40,12 +39,21 @@ export default function AddFile({getDirectoryInfo}) {
       setUploadText(uploadText) 
       if(progValue.toFixed() == '100'){
         setUploadText('File Uploaded Successfully')
-        
+       
       }
       setProgress(progValue)
    })
    xhr.addEventListener('load',()=>{
     setUploadText(xhr.response)
+    setTimeout(()=>{
+
+      setShowModal(false)
+      getDirectoryInfo()
+      if(addFileParams.name & addFileParams.paths){
+
+        getDirectoryData(addFileParams)
+      }
+    },1000)
    })
   //  xhr.addEventListener('load',(e)=>{
   //   setUploadText(xhr.responseText)

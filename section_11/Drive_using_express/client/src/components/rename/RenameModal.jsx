@@ -10,7 +10,7 @@ async function handleRename()  {
       alert("File name cannot be empty!");
       return;
     }
-    const response = await fetch(`http://${props.url}:4000/${props.filename}?action=rename`,
+    const response = await fetch(`http://${props.url}:4000/files/${props.filename}?action=rename`,
     {method:'PATCH',
       headers:{filename:newName, "Content-Type":"application/json"},
       body:JSON.stringify({newName})
