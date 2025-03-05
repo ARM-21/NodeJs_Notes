@@ -21,8 +21,7 @@ app.get('/', (req, res) => {
     readStorage(res)
 })
 //server directory
-app.get("/directory*?", (req, res) => {
-    console.log(req.params)
+app.get("/directory/?*", (req, res) => {
     if (req.params['0']) {
         readStorage(res, `/storage/${req.params['0']}`)
 
@@ -33,9 +32,8 @@ app.get("/directory*?", (req, res) => {
     }
 })
 //serves static files
-app.get('/files/*', async (req, res, next) => {
-    const filename = req.params['0']
-    console.log(filename)   
+app.get('/files/?*', async (req, res, next) => {
+    const filename = req.params['0'] 
     const file = await open(`./storage/${filename}`)
     if ((await file.stat()).isDirectory()) {
         readStorage(res, `/storage/${filename}`)
@@ -62,9 +60,10 @@ app.get('/favicon.ico', (req, res) => {
 })
 
 //deleting the file
-app.delete('/files/:filename', async (req, res, next) => {
-    const filename = req.params.filename
-    const fd = await open(`./storage/${filename}`)
+app.delete('/files/?*', async (req, res, next) => {
+    const filename = req.params['0']
+    const correctedFile = decodeURIComponent(filename)
+    const fd = await open(`./storage/${correctedFile}`)
 
     if ((await fd.stat()).isDirectory()) {
         readStorage()
@@ -80,12 +79,12 @@ app.delete('/files/:filename', async (req, res, next) => {
 
 })
 
-app.patch('/files/:filename', async (req, res, next) => {
-    console.log(req.body)
-    const filename = req.params.filename
-    console.log(filename)
+app.patch('/files/?*', async (req, res, next) => {
+  
+    const filename = req.params['0']
+   const slashContains = filename.includes('/');
     try {
-        fsPromises.rename(`./storage/${filename}`, `./storage/${req.header('filename')}${filename.slice(filename.lastIndexOf('.'))}`)
+        fsPromises.rename(`./storage/${filename?filename:""}`, `./storage${slashContains?"/"+filename.slice(0,filename.lastIndexOf('/')):""}/${req.header('filename')}${filename.slice(filename.lastIndexOf('.'))}`)
         res.status(200).end('file renamed successfully')
     } catch (err) {
         res.status(404).end('error occured')

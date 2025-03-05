@@ -21,8 +21,7 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
    const uploadModalRef = useRef(null)
    const directoryName = useParams();
    //handling when user adds or change the files
-   const addFileParams = useParams();
-   console.log(addFileParams)
+  
   async function handleAdd(e) {
     const file = e.target.files[0];
     const nestedDirectory = directoryName.name? '/'+directoryName.name:'';
@@ -48,11 +47,10 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
     setTimeout(()=>{
 
       setShowModal(false)
+      
       getDirectoryInfo()
-      if(addFileParams.name & addFileParams.paths){
-
-        getDirectoryData(addFileParams)
-      }
+        getDirectoryData(directoryName)
+   
     },1000)
    })
   //  xhr.addEventListener('load',(e)=>{

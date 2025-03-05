@@ -9,14 +9,11 @@ import RenameModal from '../rename/RenameModal'
 import './yourfile.css'
 export default function YourFiles() {
   //getting values sent from home all the state are up
-  const { files, setFiles, getDirectoryInfo, url } = useOutletContext();
-  const [deleteModal, setDeleteModal] = useState({ deleteFile: false, showModal: false, filename: '' });
-  const [isRename, setRename] = useState({ filename: '', showModal: false })
-  const [search, setSearch] = useState('');
+  const { files, setFiles, getDirectoryInfo, url, handleYes, handleNo, deleteModalRef, deleteModal, setDeleteModal, setRename, isRename, renameRef } = useOutletContext();
   const [load, setLoad] = useState('Getting your files...')
   //delete modal ref
-  const deleteModalRef = useRef(null)
-  const renameRef = useRef(null)
+
+
 
   //useEffectes for handling side effects
   useEffect(() => {
@@ -43,14 +40,7 @@ export default function YourFiles() {
   }, [isRename.showModal, renameRef])
 
 
-  //handling delete modal confirm and rejection
-  function handleNo() {
-    setDeleteModal((prev) => { return { ...prev, showModal: false, deleteFile: false, filename: '' } })
-    deleteModalRef.current.close()
-  }
-  function handleYes() {
-    setDeleteModal((prev) => { return { ...prev, showModal: false, deleteFile: true } })
-  }
+
 
   //alternative way to create delete 
   async function handleDelete(list) {
@@ -66,9 +56,9 @@ export default function YourFiles() {
     const inputValue = e.target.value;
     console.log(inputValue)
     // setSearch(e.target.value)
-    if (inputValue.length >=  1) {
+    if (inputValue.length >= 1) {
       const filteredFiles = files.filter((file) => {
-        return file.name.toLowerCase().startsWith(inputValue.toLowerCase())
+        return file.name.toLowerCase().includes(inputValue.toLowerCase())
       })
       console.log('from inside', filteredFiles)
       if (filteredFiles.length == 0) {
@@ -87,7 +77,7 @@ export default function YourFiles() {
 
 
     {isRename.showModal ?
-      createPortal(<RenameModal rename={setRename} ref={renameRef} filename={isRename.filename} getDirectoryInfo={getDirectoryInfo} url={url} />,
+      createPortal(<RenameModal rename={setRename} ref={renameRef} filename={isRename.filename} getDirectoryInfo={getDirectoryInfo} url={url} params={''} />,
         document.getElementById('root')) :
       deleteModal.showModal ?
         createPortal(<DeleteModal handleNo={handleNo} handleYes={handleYes} ref={deleteModalRef} getDirectoryInfo={getDirectoryInfo} />,

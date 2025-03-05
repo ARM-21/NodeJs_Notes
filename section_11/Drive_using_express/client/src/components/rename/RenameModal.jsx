@@ -3,6 +3,8 @@ import "./renameModal.css"; // Import CSS
 
 const RenameModal = forwardRef( function (props, ref) {
   const [newName, setNewName] = useState('');
+  const params = props.params;
+
 //short bug in renaming file  
 
 async function handleRename()  {
@@ -10,7 +12,7 @@ async function handleRename()  {
       alert("File name cannot be empty!");
       return;
     }
-    const response = await fetch(`http://${props.url}:4000/files/${props.filename}?action=rename`,
+    const response = await fetch(`http://${props.url}:4000/files${params.name?"/"+params.name:""}${params['*']?"/"+params['*']:''}/${props.filename}?action=rename`,
     {method:'PATCH',
       headers:{filename:newName, "Content-Type":"application/json"},
       body:JSON.stringify({newName})
@@ -18,6 +20,7 @@ async function handleRename()  {
     console.log('rename dialog off')
     props.rename((prev)=>{return {...prev, showModal:false}})
     props.getDirectoryInfo()
+    props.getData(params)
     console.log(response.headers.filename)
     console.log(response.status)
     if(response.status == 200){
