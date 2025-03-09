@@ -45,4 +45,22 @@
     padding: 10px;
     margin: -10px -10px;
   }
-  
+  .new-folder-btn{
+    border-radius: 5px;
+    background-color: #131e80d0;
+    color: white;
+    width: 120px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+
+  }
+  .new-folder-btn:hover{
+    background-color: #eef3ff;
+    color: #007bff;
+  }
+
+  .new-folder-btn img {
+    width: 20px;
+    height: 20px;
+  }

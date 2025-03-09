@@ -1,4 +1,4 @@
-import fsPromises, { open, readdir, readFile, rename, stat } from "node:fs/promises";
+import fsPromises, { mkdir, open, readdir, readFile, rename, stat } from "node:fs/promises";
 import cors from 'cors'
 // import http from "node:http";
 import mime, { contentType } from 'mime-types';
@@ -31,18 +31,48 @@ app.get("/directory/?*", (req, res) => {
         readStorage(res)
     }
 })
+
+//create directory 
+app.post('/directory/?*', async (req,res)=>{
+    let doesExists = false
+    console.log(req.body)
+    try{
+        const folderName = req.body.foldername;
+        const readDir = await readdir(`./storage${folderName == ''? '':'/'+folderName}`)
+        console.log(readDir)
+        for ( let names of readDir){
+            if(names === req.body.filename){
+                console.log(names)
+                res.send({message:"FOlder already exists"})
+                break;
+            } 
+        }
+        
+    }
+    catch(err){
+        doesExists = false
+        console.log('folder not created')
+    }
+    
+    try{
+        const createFolder = await mkdir(`./storage/${req.params['0']? req.params['0']: ''}`)
+        res.send({message:"FOlder created successfully"})
+        console.log("FOlder created successfully")
+    }catch(err){
+        res.send({message:"FOlder creation unsuccessfully"})
+        
+    }
+    
+
+   
+    
+    
+})
 //serves static files
 app.get('/files/?*', async (req, res, next) => {
+   
     const filename = req.params['0'] 
-    const file = await open(`./storage/${filename}`)
-    if ((await file.stat()).isDirectory()) {
-        readStorage(res, `/storage/${filename}`)
-        file.close()
-    }
-    else {
-        file.close()
-    }
-
+    console.log(filename)
     if (req.query.action == 'download') {
         res.setHeader('Content-Disposition', `attachment; filename=${filename}`)
         res.sendFile(`${import.meta.dirname}/storage/${filename}`)

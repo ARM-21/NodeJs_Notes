@@ -7,9 +7,9 @@ import { createPortal } from 'react-dom';
 
 export default function Directory() {
 const {directoryFiles,setDirectoryFiles,getData,deleteModal,setDeleteModal,handleYes,handleNo,deleteModalRef,getDirectoryInfo,setRename,renameRef,isRename,url}= useOutletContext()
-console.log("from directory",useOutletContext())
 const [load,setLoad] = useState("Loading...");
-    const params = useParams()
+const params = useParams()
+console.log("Params of directory", params)
     useEffect(() => {
         getData(params)
     }, []);
@@ -91,14 +91,12 @@ const [load,setLoad] = useState("Loading...");
                                 {/* <Link to={`${list.name}`}>Preview</Link> */}
                                 {list.isDirectory ?
                                     <a href={`/${params.name}/${list.name}`} className='image-btn'> <button>Preview</button></a>
-
-
                                     :
-                                    <a href={`http://192.168.100.7:4000/files/${params.name}${params.paths ? `/${params.paths}` : ''}/${list.name}?action=open`} className='image-btn'> <button>Preview</button></a>
+                                    <a href={`http://192.168.100.7:4000/files/${params.name}${params['*'] ? `/${params["*"]}` : ''}/${list.name}?action=open`} className='image-btn'> <button>Preview</button></a>
 
                                 }
                                 {
-                                    !list.isDirectory && <a href={`http://192.168.100.7:4000/files/${params.name}${params.paths ? `/${params.paths}` : ''}/${list.name}?action=download`} className='image-btn'> <button>Download</button></a>
+                                    !list.isDirectory && <a href={`http://192.168.100.7:4000/files/${params.name}${params['*'] ? `/${params['*']}` : ''}/${list.name}?action=download`} className='image-btn'> <button>Download</button></a>
 
                                 }
                                 <a onClick={() => {

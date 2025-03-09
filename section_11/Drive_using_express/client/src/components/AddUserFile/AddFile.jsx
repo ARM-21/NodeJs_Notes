@@ -4,6 +4,7 @@ import Modal from '../uploadConfirm/Modal';
 import UploadConfirm from '../uploadConfirm/UploadConfirm';
 import './addfile.css'
 import { useParams } from 'react-router';
+import FolderModal from '../NewFolder/FolderModal';
 
 
 export default function AddFile({getDirectoryInfo,getDirectoryData}) {
@@ -16,9 +17,14 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
    const [uploadText, setUploadText] =useState('Uploading Your File')
     //storing files related information to track file
   const [fileDetails,setFileDetails] = useState({file:'',size:'',showModal:false,eventObject:null});
+  //state for new folder modal
+  const [newFolder, setNewFolder] = useState({showModal:false})
  //references for upload and delete modal
   const refModal = useRef(null)
    const uploadModalRef = useRef(null)
+   //ref for newfolder modal
+   const newFolderModalRef = useRef(null);
+
    const directoryName = useParams();
    //handling when user adds or change the files
   
@@ -87,12 +93,25 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
       refModal.current.close()
     }
   },[refModal.current])
+
+  //effects for newFOlder modal
+  useEffect(()=>{
+    if(newFolder.showModal && newFolderModalRef.current){
+      newFolderModalRef.current.showModal()
+    }
+  
+  },[newFolder.showModal])
   //handle upload yes in upload modal
   function handleUploadYes(){
     if(fileDetails.showModal && fileDetails.eventObject){
       handleAdd(fileDetails.eventObject)
     }
   }
+//new folder modal 
+const onClose = ()=>{
+  newFolderModalRef.current.close()
+  setNewFolder((prev)=>{return {...prev, showModal:false}});
+}
 
   //on file upload change 
   function changeHandle(e){
@@ -109,7 +128,7 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
 
   return (
     <>
-      {fileDetails.showModal
+      {newFolder.showModal? <FolderModal ref={newFolderModalRef} setNewFolderModal = {setNewFolder} onClose={onClose}/>:fileDetails.showModal
         ? createPortal(
             <UploadConfirm 
               file={fileDetails.file} 
@@ -123,7 +142,9 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
         ? createPortal(
             <Modal progress={showModal} ref={refModal} value={progress} onclose= {handleCloseModal}  text = {uploadText} setShowModal={setShowModal} getDirectoryInfo={getDirectoryInfo} />, 
             document.getElementById('root')
-          ):<div className='user-add-file'>
+          ):
+          <>
+          <div className='user-add-file'>
             <h1>Add Files</h1>
             <div className='file-upload'>
               <label htmlFor='userFile' className='file-label'>
@@ -131,7 +152,18 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
               </label>
               <input type='file' name='userFile' id='userFile' onChange={(e)=>{changeHandle(e)}} required hidden />
             </div>
+            
           </div>
+          <div className="new-folder">
+          {/* <a href="http://"> */}
+          <button className='new-folder-btn' onClick={()=>{
+            setNewFolder((prev)=>{return {...prev, showModal:true}})
+          }}>
+          <img src="./folder.svg" alt="folderIcon" srcSet='<a target="_blank" href="https://icons8.com/icon/ybSHdnWBeyW3/add-folder">Add Folder</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>'  />
+          New folder</button>
+          {/* </a> */}
+          </div>
+          </>
       }
     </>
   );
