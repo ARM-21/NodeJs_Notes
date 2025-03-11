@@ -18,18 +18,29 @@ app.use(express.json())
 
 //read index serve it
 app.get('/', (req, res) => {
-    readStorage(res)
+    try{
+
+        readStorage(res)
+    }catch(err){
+        res.end(err.message)
+    }
 })
 //server directory
 app.get("/directory/?*", (req, res) => {
-    if (req.params['0']) {
-        readStorage(res, `/storage/${req.params['0']}`)
 
+    console.log("from dir lol",req.params)
+    try{
+        if (req.params['0']) {
+            readStorage(res, `/storage/${req.params['0']}`)
+    
+        }
+        else {
+            readStorage(res)
+        }
+    }catch(err){
+        res.end(err.message)
     }
-    else {
-
-        readStorage(res)
-    }
+    
 })
 
 //create directory 
@@ -61,12 +72,7 @@ app.post('/directory/?*', async (req,res)=>{
     }catch(err){
         res.send({message:"FOlder creation unsuccessfully"})
         
-    }
-    
-
-   
-    
-    
+    } 
 })
 //serves static files
 app.get('/files/?*', async (req, res, next) => {
@@ -95,16 +101,19 @@ app.delete('/files/?*', async (req, res, next) => {
     const correctedFile = decodeURIComponent(filename)
     const fd = await open(`./storage/${correctedFile}`)
 
-    if ((await fd.stat()).isDirectory()) {
-        readStorage()
-    }
+    // if ((await fd.stat()).isDirectory()) {
+    //     readStorage(res)
+    // }
     const stat = (await fd.stat())
     if (stat.isDirectory()) {
-        fsPromises.rmdir(`./storage/${filename}`, { recursive: true, force: true })
+        fsPromises.rm(`./storage/${filename}`, { recursive: true, force: true })
     }
-    fsPromises.rm(`./storage/${filename}`)
+    else{
+        fsPromises.rm(`./storage/${filename}`)
+    }
     res.json({ success: 'true', 'message': 'ended successfully' })
     fd.close()
+    
 
 
 })
@@ -143,14 +152,20 @@ app.listen(port, ip, () => {
 })
 //read intial files from storage folder
 async function readStorage(res, dir) {
-    const path = `.${dir ? dir : '/storage'}`;
-    const userResources = await readdir(path)
 
-    const data = await Promise.all(userResources.map(async (resource) => {
-        const isDirectory = await stat(`${path}/${resource}`);
-        return { name: resource, isDirectory: isDirectory.isDirectory() };
-    }))
-
-    res.json(data)
+    try{
+        const path = `.${dir ? dir : '/storage'}`;
+        const userResources = await readdir(path)
+    
+        const data = await Promise.all(userResources.map(async (resource) => {
+            const isDirectory = await stat(`${path}/${resource}`);
+            return { name: resource, isDirectory: isDirectory.isDirectory() };
+        }))
+    
+        res.json(data)
+    }catch(err){
+        res.json({"message":err.message})
+    }
+  
 }
 

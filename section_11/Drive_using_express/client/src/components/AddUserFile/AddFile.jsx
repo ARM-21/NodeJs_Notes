@@ -5,6 +5,7 @@ import UploadConfirm from '../uploadConfirm/UploadConfirm';
 import './addfile.css'
 import { useParams } from 'react-router';
 import FolderModal from '../NewFolder/FolderModal';
+// import folder from './../../../public/folder.svg'
 
 
 export default function AddFile({getDirectoryInfo,getDirectoryData}) {
@@ -159,7 +160,7 @@ const onClose = ()=>{
           <button className='new-folder-btn' onClick={()=>{
             setNewFolder((prev)=>{return {...prev, showModal:true}})
           }}>
-          <img src="./folder.svg" alt="folderIcon" srcSet='<a target="_blank" href="https://icons8.com/icon/ybSHdnWBeyW3/add-folder">Add Folder</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>'  />
+          <img src="/folder.svg" alt="folderIcon" srcSet='<a target="_blank" href="https://icons8.com/icon/ybSHdnWBeyW3/add-folder">Add Folder</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>'  />
           New folder</button>
           {/* </a> */}
           </div>
