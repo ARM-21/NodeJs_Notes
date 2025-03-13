@@ -1,7 +1,7 @@
 
 import cors from 'cors'
 import express from "express";
-import FileRoutes from "./routes/FileRoutes.mjs"
+import FileRoutes from "./routes/FileRoutes.js"
 import FolderRoutes from "./routes/FolderRoutes.mjs"
 const port = 4000;
 const ip = '192.168.100.7'
@@ -11,7 +11,7 @@ const app = express();
 //global middleware for each request
 app.use(cors())
 app.use(express.json())
-app.use('/files',FileRoutes)
+app.use('/file',FileRoutes)
 app.use('/directory',FolderRoutes)
 
 //server listening
