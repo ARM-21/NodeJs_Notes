@@ -1,9 +1,10 @@
-import { mkdir, readdir, stat } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import express from "express";
 import path from "node:path";
 import FolderData from "../FolderDB.json" with {type: "json"};
 import FilesData from "../FilesDB.json" with {type: "json"};
-import { writeFile } from "node:fs";
+import { rm, writeFile } from "node:fs";
+import { dir } from "node:console";
 const router = express.Router();
 
 //server directory
@@ -11,57 +12,59 @@ router.get("/:id?", (req, res) => {
     const { id } = req.params;
 
     if (!id) {
-       const files = FolderData[0].files.map((data)=>{
-           return FilesData.find((file)=>{
+        const files = FolderData[0].files.map((data) => {
+            return FilesData.find((file) => {
                 return file.id == data
             })
-        })  
-        ;
-        res.json({...FolderData[0],files})
-    }
-    else{
-        const folder = FolderData.find((data)=>{ return data.id == id})
-       const files = folder.files.map((filename)=>{
-            return FilesData.find((data)=>{ return filename == data.id})
+        });
+        const directories = FolderData[0].directories.map((directory) => {
+            return FolderData.find(({id}) => { return id == directory })
         })
-       res.json({...folder,files})
+        res.json({ ...FolderData[0], files, directories })
+    }
+    else {
+        const folder = FolderData.find((data) => { return data.id == id })
+        console.log('get folder', folder)
+        const files = folder.files.map((filename) => {
+            return FilesData.find((data) => { return filename == data.id })
+        })
+        const directories = folder.directories.map((directory) => {
+            console.log(directory)
+            return FolderData.find(({id}) => { 
+                console.log(id == directory)
+                return id == directory })
+        })
+        console.log(directories)
+        res.json({ ...folder, files, directories })
     }
 
 
 })
-
 //create directory 
-router.post('/:foldername', async (req, res) => {
-    let doesExists = false
+router.post('/:parentId?', async (req, res) => {
+    const directoryName = req.headers.dirname
+    /**optional if user want to upload in root folder*/
+    const parentDirId = req.params.parentId || FolderData[0].id;
     const folderId = crypto.randomUUID();
-    console.log(req.body)
     const basePath = `./storage/${folderId}`
     try {
         const makeDirectory = await mkdir(basePath)
-        let files = [];
-        let folder = [];
-        const content = await readdir(basePath)
-        content.map(async (data) => {
-            const status = (await stat(`./storage/${data}`)).isDirectory()
-            if (status) {
-                folder.push(data)
-            }
-            else {
-                files.push(data)
-            }
+        if (req.params.parentId) {
+            const associatedFolder = FolderData.find(({ id }) => {
+                return id == parentDirId
+            })
+            associatedFolder.directories.push(folderId)
+        }
+        else {
+            FolderData[0].directories.push(folderId)
+        }
+        FolderData.push({
+            id: folderId,
+            name: directoryName,
+            parentId: parentDirId,
+            files: [],
+            directories: []
         })
-
-        FolderData.push(
-            {
-                id: folderId,
-                name: req.params.foldername,
-                parentId: null,
-                content: {
-                    files,
-                    Directories: folder
-                }
-            }
-        )
         writeFile('./FolderDB.json', JSON.stringify(FolderData), (err) => {
             if (err) {
                 res.end(JSON.stringify({ message: err }))
@@ -73,54 +76,126 @@ router.post('/:foldername', async (req, res) => {
         console.log(error)
         res.end(JSON.stringify({ message: "error occured" }))
     }
-
-
-
-
-    // try{
-    //     const folderName = path.join("/",req.body.foldername);
-    //     const readDir = await readdir(`./storage${folderName == ''? '':'/'+folderName}`)
-    //     console.log(readDir)
-    //     for ( let names of readDir){
-    //         if(names === req.body.filename){
-    //             console.log(names)
-    //             res.send({message:"FOlder already exists"})
-    //             break;
-    //         } 
-    //     }
-
-    // }
-    // catch(err){
-    //     doesExists = false
-    //     console.log('folder not created')
-    // }
-
-    // try{
-    //     const createFolder = await mkdir(`./storage/${req.params['0']? req.params['0']: ''}`)
-    //     res.send({message:"FOlder created successfully"})
-    //     console.log("FOlder created successfully")
-    // }catch(err){
-    //     res.send({message:"FOlder creation unsuccessfully"})
-
-    // } 
 })
+//delete folders
+router.delete('/:folderId?', (req, res) => {
+    //folder id
+    const folderId = req.params.folderId;
+    //parent directory id
+    const parentIdUser = req.headers.dirid || FolderData[0].id;
 
-async function readStorage(res, dir) {
+    //main folder index
+    let folderIndex = FolderData.findIndex(({ id }) => id == folderId)
+    if (folderIndex >= 0) {
+        //parent directory index
+        let associatedDirIndex = FolderData.findIndex(({ id, parentId }) => { return id == parentIdUser })
+        //index of parentDirectory of file inside parent dir directories folder
+        if (FolderData[folderIndex].files.length > 0) {
+            FolderData[folderIndex].files.map((parentFileId) => {
+                const indexOfFile = FilesData.findIndex(({ id }) => {
+                    return parentFileId == id;
+                })
+                if (indexOfFile >= 0) {
+                    console.log("removing file id", FilesData[indexOfFile].id)
+                    rm(`./storage/${FilesData[indexOfFile].id}${FilesData[indexOfFile].extension}`, (err) => {
+                        console.log("error from file",err)
+                        if (!res.headersSent && err) {
+                            res.json({ message: err })
+                            return
+                        }
+                    })
+                    FilesData.splice(indexOfFile, 1)
+                }
+                else {
+                    console.log("no file exists")
+                }
 
-    try {
-        const path = `.${dir ? dir : '/storage'}`;
-        const userResources = await readdir(path)
+            })
+        }
 
-        const data = await Promise.all(userResources.map(async (resource) => {
-            const isDirectory = await stat(`${path}/${resource}`);
-            return { name: resource, isDirectory: isDirectory.isDirectory() };
-        }))
+        if (FolderData[folderIndex].directories.length > 0) {
+            FolderData[folderIndex].directories.map((parentFileId) => {
+                const indexOfFolder = FolderData.findIndex(({ id }) => {
+                    return parentFileId == id;
+                })
+                if (indexOfFolder >= 0) {
+                    rm(`./storage/${FolderData[indexOfFolder].id}`, (err) => {
+                        if (!res.headersSent && err) {
+                            res.json({ message: err })
+                            return
+                        }
+                    })
+                    FolderData.splice(indexOfFolder, 1)
+                }
 
-        res.json(data)
-    } catch (err) {
-        res.json({ "message": err.message })
+            })
+        }
+        else {
+            console.log("no folder exists")
+        }
+
+        let folderIndexParentDir = FolderData[associatedDirIndex].directories.findIndex(({ id }) => { return id == folderId })
+        FolderData[associatedDirIndex].directories.splice(folderIndexParentDir, 1)
+        FolderData.splice(folderIndex, 1)
+    }
+    else {
+        res.json({ message: "folder not found" })
+        return
     }
 
-}
 
+    rm(`./storage/${folderId}`, { force: true, recursive: true }, (err) => {
+        if (!res.headersSent && err) {
+            res.json({ message: err })
+            return
+        }
+    })
+
+    writeFile('./FolderDB.json', JSON.stringify(FolderData), (err) => {
+        if (err) {
+            res.json({ message: "error occured" })
+            return
+        }
+    })
+
+    writeFile('./FilesDB.json', JSON.stringify(FilesData), (err) => {
+        if (err) {
+            res.json({ message: "error occured" })
+            return
+        }
+    })
+
+
+    res.json({ message: "removed sucessfully" })
+
+
+})
+
+router.patch("/:id", async (req, res) => {
+    const folderId = req.params.id;
+    const newname = req.headers.newname
+    const folder = FolderData.find(({id})=>{
+        return id == folderId
+    })
+    if(!folder){
+        res.end("Folder Not found");
+        return;
+    }
+
+   
+        folder.name = newname;
+        writeFile(`./FolderDB.json`,JSON.stringify(FolderData),(err)=>{
+            if(err && res.headersSent){
+                res.json({message:"Renamed UnSuccessfully"})
+            }
+            else{
+                res.json({message:"Renamed Successfully"})
+            }
+        })
+
+        
+    
+    // const 
+
+})
 export default router;

@@ -1,13 +1,1 @@
-[
-    {
-        "id": "fc545c1c-1a79-47ec-a4d8-5f1e5ce699a0",
-        "name": "root",
-        "parentId": null,
-        "files": [
-            "5376a27f-dfee-4744-9258-bd4bb57daa50",
-            "68283bac-d7d0-4821-a1ad-74c420295de0",
-            "89aa09ab-5db8-4b4e-aa8c-1bc03266f833"
-        ],
-        "Directories": []
-    }
-]
+[{"id":"fc545c1c-1a79-47ec-a4d8-5f1e5ce699a0","name":"root","parentId":null,"files":["68283bac-d7d0-4821-a1ad-74c420295de0","61d48dfd-9784-4645-93c5-53a94d51a759"],"directories":["c18724a0-d523-4299-880d-69e0e49b2b33","051e018c-4e7f-43f8-bd41-9879e3b2b530"]},{"id":"c18724a0-d523-4299-880d-69e0e49b2b33","name":"hellomate","parentId":"fc545c1c-1a79-47ec-a4d8-5f1e5ce699a0","files":["d274d1e4-49a8-435f-bac9-a65d25ba0140"],"directories":["672c4cdc-42ec-4853-80f6-566f27ea8e25","7f0ffdc5-d2a3-4996-b3f8-8ec13698844f"]},{"id":"672c4cdc-42ec-4853-80f6-566f27ea8e25","name":"newInside","parentId":"c18724a0-d523-4299-880d-69e0e49b2b33","files":["4abee472-8fb5-4999-bd24-4c93b29a0a5e","99e8fb04-bfca-4d38-b2bb-222b021f1e19"],"directories":[]},{"id":"7f0ffdc5-d2a3-4996-b3f8-8ec13698844f","name":"aasish","parentId":"c18724a0-d523-4299-880d-69e0e49b2b33","files":["5913e7c5-e63f-4c1c-82ef-1996b87dd961"],"directories":[]},{"id":"051e018c-4e7f-43f8-bd41-9879e3b2b530","name":"Aasish","parentId":"fc545c1c-1a79-47ec-a4d8-5f1e5ce699a0","files":["08f21691-7c0b-4dc7-b361-846c628d3c01","bdb00b78-f355-4925-a3b7-474ff7cc0f46"],"directories":[]}]

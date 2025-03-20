@@ -12,17 +12,15 @@ async function handleRename()  {
       alert("File name cannot be empty!");
       return;
     }
-    const response = await fetch(`http://${props.url}:4000/files${params.name?"/"+params.name:""}${params['*']?"/"+params['*']:''}/${props.filename}?action=rename`,
+    const response = await fetch(`http://${props.url}:4000/${props.filename.type}/${props.filename.id}?action=rename`,
     {method:'PATCH',
-      headers:{filename:newName, "Content-Type":"application/json"},
-      body:JSON.stringify({newName})
+      headers:{newname:newName, "Content-Type":"application/json"},
     });
     console.log('rename dialog off')
-    props.rename((prev)=>{return {...prev, showModal:false}})
+    props.rename((prev)=>{return {...prev, showModal:false,id:'',filename:''}})
     props.getDirectoryInfo()
-    props.getData(params)
-    console.log(response.headers.filename)
-    console.log(response.status)
+    // props.getData(params)
+    
     if(response.status == 200){
       const resText = await response.text();
       alert(resText);
@@ -39,7 +37,7 @@ async function handleRename()  {
     <dialog className="rename-modal-overlay" ref={ref}>
       <div className="rename-modal">
         <h2>Rename File</h2>
-        <p>Current Name: <strong>{props.filename}</strong></p>
+        <p>Current Name: <strong>{props.filename.filename}</strong></p>
         <input
           type="text"
           value={newName}
@@ -49,7 +47,7 @@ async function handleRename()  {
         />
         <div className="button-group">
           <button className="rename-button" onClick={handleRename}>Rename</button>
-          <button className="cancel-button" onClick={() => {props.rename((prev=>{return {...prev,showModal:false}}))}}>Cancel</button>
+          <button className="cancel-button" onClick={() => {props.rename((prev=>{return {...prev,showModal:false,id:'',filename:""}}))}}>Cancel</button>
         </div>
       </div>
     </dialog>

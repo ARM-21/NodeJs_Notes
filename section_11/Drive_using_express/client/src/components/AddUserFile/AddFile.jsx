@@ -19,26 +19,23 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
     //storing files related information to track file
   const [fileDetails,setFileDetails] = useState({file:'',size:'',showModal:false,eventObject:null});
   //state for new folder modal
-  const [newFolder, setNewFolder] = useState({showModal:false})
  //references for upload and delete modal
   const refModal = useRef(null)
    const uploadModalRef = useRef(null)
    //ref for newfolder modal
-   const newFolderModalRef = useRef(null);
 
    const directoryName = useParams();
    //handling when user adds or change the files
   
   async function handleAdd(e) {
     const file = e.target.files[0];
-    const nestedDirectory = directoryName.name? '/'+directoryName.name:'';
-    const multiLevelPath = directoryName['*']?'/'+directoryName['*']:'';
     setFileDetails({file:file.name,size:file.size/1024*1024,showModal:false})
     if (!file) return;
     //creating a xhr similar to fetch uses callback (older than fetch promise based)
     const xhr = new XMLHttpRequest();
-    xhr.open('POST',`http://192.168.100.7:4000/files${nestedDirectory}${multiLevelPath}/${file.name}?action=add`,true)
+    xhr.open('POST',`http://192.168.100.7:4000/file/${file.name}?action=add`,true)
     // xhr.setRequestHeader('filename',file.name)
+    xhr.setRequestHeader('dirid',directoryName.name || '')
 
    xhr.upload.addEventListener('progress',(prog)=>{
       const progValue = (prog.loaded/prog.total) * 100 
@@ -55,8 +52,7 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
 
       setShowModal(false)
       
-      getDirectoryInfo()
-        getDirectoryData(directoryName)
+      getDirectoryInfo(directoryName.name)
    
     },1000)
    })
@@ -95,23 +91,11 @@ export default function AddFile({getDirectoryInfo,getDirectoryData}) {
     }
   },[refModal.current])
 
-  //effects for newFOlder modal
-  useEffect(()=>{
-    if(newFolder.showModal && newFolderModalRef.current){
-      newFolderModalRef.current.showModal()
-    }
-  
-  },[newFolder.showModal])
-  //handle upload yes in upload modal
-  function handleUploadYes(){
-    if(fileDetails.showModal && fileDetails.eventObject){
-      handleAdd(fileDetails.eventObject)
-    }
+ //handle upload yes in upload modal
+ function handleUploadYes(){
+  if(fileDetails.showModal && fileDetails.eventObject){
+    handleAdd(fileDetails.eventObject)
   }
-//new folder modal 
-const onClose = ()=>{
-  newFolderModalRef.current.close()
-  setNewFolder((prev)=>{return {...prev, showModal:false}});
 }
 
   //on file upload change 
@@ -129,7 +113,7 @@ const onClose = ()=>{
 
   return (
     <>
-      {newFolder.showModal? <FolderModal ref={newFolderModalRef} setNewFolderModal = {setNewFolder} onClose={onClose}/>:fileDetails.showModal
+      {fileDetails.showModal
         ? createPortal(
             <UploadConfirm 
               file={fileDetails.file} 
@@ -155,13 +139,9 @@ const onClose = ()=>{
             </div>
             
           </div>
-          <div className="new-folder">
+          <div className="new-folder ">
           {/* <a href="http://"> */}
-          <button className='new-folder-btn' onClick={()=>{
-            setNewFolder((prev)=>{return {...prev, showModal:true}})
-          }}>
-          <img src="/folder.svg" alt="folderIcon" srcSet='<a target="_blank" href="https://icons8.com/icon/ybSHdnWBeyW3/add-folder">Add Folder</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>'  />
-          New folder</button>
+        
           {/* </a> */}
           </div>
           </>

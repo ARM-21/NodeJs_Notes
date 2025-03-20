@@ -4,19 +4,14 @@ import { useParams } from "react-router";
 
 const FolderModal = forwardRef(({ onClose,setNewFolderModal }, ref) => {
   const [folderName, setFolderName] = useState({name:'',sendRequest:false});
-  const paths=useParams()
-
+  const paths = useParams()
+  // console.log(paths)
   async function createFolder() {
     
     if(folderName.sendRequest){
-      const response = await fetch(`http://192.168.100.7:4000/directory${paths.name? "/"+paths.name:''}${paths["*"]? "/"+paths['*']:''}/${folderName.name}`,{
+      const response = await fetch(`http://192.168.100.7:4000/directory/${paths.name || ''}`,{
         method:"POST",
-        headers:{"content-type":"application/json"},
-        body:JSON.stringify({
-          "filename":folderName.name,
-          "foldername":paths.name?paths.name:''
-        })
-  
+        headers:{"content-type":"application/json","dirname":folderName.name},
       })
       const data = await response.json();
       setFolderName((prev)=>{ return {...prev,sendRequest:false,name:''}})

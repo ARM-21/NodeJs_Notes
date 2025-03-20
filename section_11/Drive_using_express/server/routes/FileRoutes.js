@@ -9,18 +9,23 @@ const router = express.Router();
 
 //serves static files
 router.get('/:id', async (req, res) => {
-
     const id = req.params.id
     console.log(id)
-    const file = FilesData.filter((file) => {
+    const file = FilesData.find((file) => {
         console.log(file.id)
         return file.id == id
-    })[0];
-    console.log(file.name)
+    });
+
+    console.log(file)
+
+    if(!file){
+        res.end(JSON.stringify({message:"FIle not Found"}))
+        return;
+    }
     const fullPath = path.join(import.meta.dirname, '..', `/storage/${file.id}${file.extension}`)
 
     if (req.query.action == 'download') {
-        res.setHeader('Content-Disposition', `attachment; filename=${path.basename(id)}`)
+        res.setHeader('Content-Disposition', `attachment; filename=${path.basename(file.name)}`)
     }
     res.sendFile(fullPath, (err) => {
         if (err) {
@@ -52,7 +57,6 @@ router.delete('/:id', async (req, res) => {
     }
     const filename = `${fileDetails.id}${fileDetails.extension}`
     //checks if it is a folder or a file to act accordingly
-    // const fd = await open(`./storage/${filename}`)
     const status = (await stat(`./storage/${filename}`)).isDirectory()
     if (status) {
         fsPromises.rm(`./storage/${filename}`, { recursive: true, force: true })
@@ -80,7 +84,6 @@ router.delete('/:id', async (req, res) => {
             console.log(err)
         }
     })
-
     //writes in filesDB.json
     const writeInFile = writeFile(`./FilesDB.json`, JSON.stringify(FilesData), (err) => {
         if (err) {
@@ -93,7 +96,6 @@ router.delete('/:id', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
     const { id } = req.params;
-    console.log(req.body.newname)
     const file = FilesData.find((file) => {
         return file.id == id
     });
@@ -103,7 +105,7 @@ router.patch('/:id', async (req, res) => {
         return
     }
     try {
-        file.name = req.body.newname
+        file.name = req.headers.newname
         writeFile('./FilesDB.json', JSON.stringify(FilesData), (err) => {
             if (err) {
                 res.end(JSON.stringify({ message: "Error renaming file" }))
@@ -120,25 +122,33 @@ router.patch('/:id', async (req, res) => {
 //file uploading 
 router.post('/:filename', async (req, res) => {
     const filename = req.params.filename;
-    const dirID  = req.headers.dirid || FolderData[0].id;
+    //optinal users might not sent the parentId for root
+    const parentDirID  = req.headers.dirid || FolderData[0].id;
     const extension = path.extname(filename);
     const id = crypto.randomUUID()
     const fileFullName = `${id}${extension}`
     try {
         const writeStream = fs.createWriteStream(`./storage/${fileFullName}`)
         req.pipe(writeStream)
-        res.end(JSON.stringify({ "name": 'File Uploaded Successfully' }))
+        
         writeStream.on('finish', () => {
             FilesData.push({
                 id,
                 name: filename,
                 extension,
-                parentId: dirID
+                parentId: parentDirID
             })
-            const associatedFolder = FolderData.find((folder) => {
-                return folder.id == dirID
-            })
-            associatedFolder.files.push(id)
+
+            if(req.headers.dirid){
+                const associatedFolder = FolderData.find((folder) => {
+                    return folder.id == parentDirID
+                })
+                associatedFolder.files.push(id)
+            }
+            else{
+                FolderData[0].files.push(id)
+            }
+            
 
             writeFile('./FolderDB.json', JSON.stringify(FolderData), (err) => {
                 if (err) {
@@ -150,6 +160,7 @@ router.post('/:filename', async (req, res) => {
                     console.log(err)
                 }
             })
+            res.end(JSON.stringify({ "name": 'File Uploaded Successfully' }))
 
 
         })
