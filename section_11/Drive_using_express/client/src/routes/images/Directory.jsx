@@ -114,13 +114,14 @@ export default function Directory() {
 
      
 
-      {newFolder.showModal && (
+      {newFolder.showModal && 
+        createPortal(
         <FolderModal
           ref={newFolderModalRef}
           setNewFolderModal={setNewFolder}
           onClose={closeFolderModal}
         />
-      )}
+      ,document.getElementById("root"))}
 
       <div className='directory-container'>
         <SearchBar handleSearch={handleSearch} />

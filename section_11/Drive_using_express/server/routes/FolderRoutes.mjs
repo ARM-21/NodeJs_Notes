@@ -17,25 +17,34 @@ router.get("/:id?", (req, res) => {
                 return file.id == data
             })
         });
+
+        if (!files) {
+            res.json({ message: "FOlder Not Found" });
+            return
+        }
         const directories = FolderData[0].directories.map((directory) => {
-            return FolderData.find(({id}) => { return id == directory })
+            return FolderData.find(({ id }) => { return id == directory })
         })
-        res.json({ ...FolderData[0], files, directories })
+        res.status(200).json({ ...FolderData[0], files, directories })
     }
     else {
         const folder = FolderData.find((data) => { return data.id == id })
         console.log('get folder', folder)
+        if (!folder) {
+            res.status(404).json({ message: "FOlder Not Found" });
+            return
+        }
         const files = folder.files.map((filename) => {
             return FilesData.find((data) => { return filename == data.id })
         })
         const directories = folder.directories.map((directory) => {
             console.log(directory)
-            return FolderData.find(({id}) => { 
+            return FolderData.find(({ id }) => {
                 console.log(id == directory)
-                return id == directory })
+                return id == directory
+            })
         })
-        console.log(directories)
-        res.json({ ...folder, files, directories })
+        res.status(200).json({ ...folder, files, directories })
     }
 
 
@@ -53,6 +62,11 @@ router.post('/:parentId?', async (req, res) => {
             const associatedFolder = FolderData.find(({ id }) => {
                 return id == parentDirId
             })
+
+            if(!associatedFolder){
+                res.status(404).json({message:"Folder doesn't exists"})
+                return
+            }
             associatedFolder.directories.push(folderId)
         }
         else {
@@ -67,14 +81,14 @@ router.post('/:parentId?', async (req, res) => {
         })
         writeFile('./FolderDB.json', JSON.stringify(FolderData), (err) => {
             if (err) {
-                res.end(JSON.stringify({ message: err }))
+                res.status(400).end(JSON.stringify({ message: "Error Writing" }))
                 return
             }
         })
         res.json({ message: "posted successfully" })
     } catch (error) {
         console.log(error)
-        res.end(JSON.stringify({ message: "error occured" }))
+        res.status(400).end(JSON.stringify({ message: "error occured" }))
     }
 })
 //delete folders
@@ -86,6 +100,11 @@ router.delete('/:folderId?', (req, res) => {
 
     //main folder index
     let folderIndex = FolderData.findIndex(({ id }) => id == folderId)
+
+    if(!folderIndex){
+        res.status(400).json({message:"FOlder doesn't Exists"})
+        return
+    }
     if (folderIndex >= 0) {
         //parent directory index
         let associatedDirIndex = FolderData.findIndex(({ id, parentId }) => { return id == parentIdUser })
@@ -98,9 +117,9 @@ router.delete('/:folderId?', (req, res) => {
                 if (indexOfFile >= 0) {
                     console.log("removing file id", FilesData[indexOfFile].id)
                     rm(`./storage/${FilesData[indexOfFile].id}${FilesData[indexOfFile].extension}`, (err) => {
-                        console.log("error from file",err)
+                        console.log("error from file", err)
                         if (!res.headersSent && err) {
-                            res.json({ message: err })
+                            res.status(400).json({ message: "Something went wrong" })
                             return
                         }
                     })
@@ -121,7 +140,7 @@ router.delete('/:folderId?', (req, res) => {
                 if (indexOfFolder >= 0) {
                     rm(`./storage/${FolderData[indexOfFolder].id}`, (err) => {
                         if (!res.headersSent && err) {
-                            res.json({ message: err })
+                            res.status(400).json({ message: "Error while writing" })
                             return
                         }
                     })
@@ -139,28 +158,28 @@ router.delete('/:folderId?', (req, res) => {
         FolderData.splice(folderIndex, 1)
     }
     else {
-        res.json({ message: "folder not found" })
+        res.status(404).json({ message: "folder not found" })
         return
     }
 
 
     rm(`./storage/${folderId}`, { force: true, recursive: true }, (err) => {
         if (!res.headersSent && err) {
-            res.json({ message: err })
+            res.status(504).json({ message: "Error Creating FOlder" })
             return
         }
     })
 
     writeFile('./FolderDB.json', JSON.stringify(FolderData), (err) => {
         if (err) {
-            res.json({ message: "error occured" })
+            res.status(504).json({ message: "error occured while writing" })
             return
         }
     })
 
     writeFile('./FilesDB.json', JSON.stringify(FilesData), (err) => {
         if (err) {
-            res.json({ message: "error occured" })
+            res.status(504).json({ message: "error occured while writing" })
             return
         }
     })
@@ -174,27 +193,27 @@ router.delete('/:folderId?', (req, res) => {
 router.patch("/:id", async (req, res) => {
     const folderId = req.params.id;
     const newname = req.headers.newname
-    const folder = FolderData.find(({id})=>{
+    const folder = FolderData.find(({ id }) => {
         return id == folderId
     })
-    if(!folder){
-        res.end("Folder Not found");
+    if (!folder) {
+        res.status().end("Folder Not found");
         return;
     }
 
-   
-        folder.name = newname;
-        writeFile(`./FolderDB.json`,JSON.stringify(FolderData),(err)=>{
-            if(err && res.headersSent){
-                res.json({message:"Renamed UnSuccessfully"})
-            }
-            else{
-                res.json({message:"Renamed Successfully"})
-            }
-        })
 
-        
-    
+    folder.name = newname;
+    writeFile(`./FolderDB.json`, JSON.stringify(FolderData), (err) => {
+        if (err && res.headersSent) {
+            res.status(201).json({ message: "Renamed UnSuccessfully" })
+        }
+        else {
+            res.status(200).json({ message: "Renamed Successfully" })
+        }
+    })
+
+
+
     // const 
 
 })

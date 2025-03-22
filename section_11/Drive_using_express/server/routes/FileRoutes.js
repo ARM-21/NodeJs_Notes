@@ -67,6 +67,10 @@ router.delete('/:id', async (req, res) => {
     res.json({ success: 'true', 'message': 'deleted successfully' })
     //removing details from FilesDB.json
     const fileIndex = FilesData.findIndex((file) => { return file.id == req.params.id })
+    if(fileIndex == -1){
+        res.status(404).json({message:"File doesn't exists"})
+        return
+    }
     FilesData.splice(fileIndex, 1)
 
 
@@ -143,6 +147,11 @@ router.post('/:filename', async (req, res) => {
                 const associatedFolder = FolderData.find((folder) => {
                     return folder.id == parentDirID
                 })
+
+                if(!associatedFolder){
+                    res.status(400).json({message:"NO folder Exists"})
+                    return
+                }
                 associatedFolder.files.push(id)
             }
             else{

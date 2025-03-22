@@ -13,6 +13,9 @@ app.use(cors())
 app.use(express.json())
 app.use('/file',FileRoutes)
 app.use('/directory',FolderRoutes)
+app.use((err,req,res,next)=>{
+    res.status(500).json({message:"Something Went Wrong"})
+})
 
 //server listening
 app.listen(port, ip, () => {

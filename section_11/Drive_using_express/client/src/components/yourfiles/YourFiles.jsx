@@ -132,13 +132,13 @@ export default function YourFiles() {
           document.getElementById("root")
         )}
 
-      {newFolder.showModal && (
+      {newFolder.showModal && createPortal(
         <FolderModal
           ref={newFolderModalRef}
           setNewFolderModal={setNewFolder}
           onClose={closeFolderModal}
         />
-      )}
+      ,document.getElementById('root'))}
 
       {/* File Manager Section */}
       <div className="your-files">
