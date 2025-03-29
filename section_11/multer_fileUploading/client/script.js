@@ -4,8 +4,11 @@ const form = document.querySelector("form")
 
 form.addEventListener("submit", (e) => {
   // Prevent page refresh
-
+  e.preventDefault(); 
     const formData = new FormData(form);
+
+    //for appending the more data we can use 
+    formData.append("parentId", 'id213')
     let xhr = new XMLHttpRequest();
     xhr.open("POST", "http://192.168.100.7:3000/upload", true);
     xhr.send(formData);
@@ -20,7 +23,7 @@ form.addEventListener("submit", (e) => {
         const totalProgress = (e.loaded / e.total) * 100;
         console.log(totalProgress);
     });
-    e.preventDefault(); 
+    
 
     
 });

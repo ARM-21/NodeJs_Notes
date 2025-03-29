@@ -56,40 +56,33 @@ import cors from "cors";
 const app = express();
 app.use(cors());
 
-// Ensure uploads directory exists
-async function createUploadsDir() {
-  try {
-    await fs.access("./uploads");
-  } catch (err) {
-    await fs.mkdir("./uploads");
-  }
-}
-await createUploadsDir(); // 👈 Create directory on startup
+ // 👈 Create directory on startup
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./uploads");
+    cb(null, "uploads");
   },
   filename: function (req, file, cb) {
-    const id = crypto.randomUUID(); // ✅ Now works
+    const id = crypto.randomUUID(); 
     const extension = path.extname(file.originalname);
     cb(null, `${id}${extension}`);
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({storage:storage});
 
-app.post(
-  "/upload",
-  upload.fields([
-    { name: "userFile", maxCount: 1 },
-    { name: "userFile2", maxCount: 1 },
-  ]),
-  (req, res) => {
-    console.log(req.files);
-    res.json(req.files); // Send files metadata as JSON
-  }
-);
+// app.post(
+//   "/upload",
+//   upload.single('userFile2'),
+//   (req, res) => {
+//     console.log(req.files);
+//     res.json({files:req.files}); // Send files metadata as JSON
+//   }
+// );
+
+app.post('/upload',upload.single('userFile2'),(req,res)=>{
+res.json({message:'nothing here'})
+})
 
 // Error handling middleware
 app.use((err, req, res, next) => { // 👈 Handle errors properly
