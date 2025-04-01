@@ -55,28 +55,31 @@ router.post("/login", async (req, res) => {
     try{
         
     const userData = req.body.formData
-    console.log(userData.username)
+    console.log(userData.email)
     console.log(userData.password)
 
         const userIndex = userDetails.findIndex((user)=>{
             console.log(user)
-            return user.username == userData.username;
+            return user.email == userData.email;
         })
         console.log(userIndex)
         if(userIndex < 0){
-            res.status(404).json({message:"User Doesn't Exists"})
+            res.status(404).json({error:"User Doesn't Exists"})
                 return;
         }
         const userObj = userDetails[userIndex]
-        if(userObj.username != userData.username || userObj.password != userData.password){
-            res.status(404).json({message:"Username or password err"})
+        if(userObj.email != userData.email || userObj.password != userData.password){
+            res.status(404).json({error:"Username or password error"})
             return;
         }
-            res.status(200).json({message:"User Login Successfull",userId:userDetails[userIndex].id})
+        // `/user/${userObj.id}`})
+            res.cookie('uid',userObj.id,{sameSite:'none',secure:true})
+            res.status(200).json({message:"User Login Successfull",userId:userObj.id})
+
                 return;
     }
     catch(err){
-        res.status(500).json({message:" Login unsuccessfull"})
+        res.status(500).json({error:" Login unsuccessfull"})
     }
 
 

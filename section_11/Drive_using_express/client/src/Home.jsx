@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import AddFile from './components/AddUserFile/AddFile.jsx'
 import { Outlet, useParams } from 'react-router'
 // Importing CSS file
-const url = '192.168.100.7'
+const url = 'localhost'
 export default function Home() {
   const paths = useParams()
   const [files, setFiles] = useState([]);
@@ -15,7 +15,9 @@ export default function Home() {
   const renameRef = useRef(null)
   
   async function getDirectoryInfo(params=''){
-    fetch(`http://${url}:4000/directory/${params}`)
+    fetch(`http://${url}:4000/directory/${params}`,{
+      credentials:'include'
+    })
     .then((res) => res.json())
     .then((data) => {
       // console.log(data)

@@ -1,14 +1,1 @@
-[
-    {
-        "id": "68283bac-d7d0-4821-a1ad-74c420295de0",
-        "name": "myImage",
-        "extension": ".png",
-        "parentId": "fc545c1c-1a79-47ec-a4d8-5f1e5ce699a0"
-    },
-    {
-        "id": "724b3392-cde8-41e6-98ab-d3ffcd325383",
-        "name": "Screenshot from 2023-07-29 16-14-00.png",
-        "extension": ".png",
-        "parentId": "0f983141-ecd1-4853-917d-d879de597731"
-    }
-]
+[{"id":"68283bac-d7d0-4821-a1ad-74c420295de0","name":"myImage","extension":".png","parentId":"fc545c1c-1a79-47ec-a4d8-5f1e5ce699a0"},{"id":"724b3392-cde8-41e6-98ab-d3ffcd325383","name":"sanaaaa","extension":".png","parentId":"0f983141-ecd1-4853-917d-d879de597731"}]

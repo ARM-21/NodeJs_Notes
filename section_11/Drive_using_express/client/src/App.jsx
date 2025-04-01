@@ -28,9 +28,36 @@ const routes = createBrowserRouter([
   children:[{
       path: ':id',
       element: <Directory />,
-  }]
   },
 
+
+//   {
+//     path: 'directory:id',
+//     element: <Directory />,
+// },
+
+]
+  },
+  // {
+  //       path: 'directory/:id',
+  //       element: <Directory />,
+  //   },
+  {
+    path: '/',
+    element: <Home />,
+    children:[
+      {
+        path:"files",
+        element:<YourFiles/>,
+        index:true
+      },{
+        path:"directory/:name",
+        element:<Directory/>,
+      }
+    ]
+
+
+}
 ]
 )
 function App() {

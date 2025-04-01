@@ -3,13 +3,27 @@ import express from "express";
 import path from "node:path";
 import FolderData from "../FolderDB.json" with {type: "json"};
 import FilesData from "../FilesDB.json" with {type: "json"};
+import UserData from "../UserDB.json" with {type:"json"};
 import { rm, writeFile } from "node:fs";
 import { dir } from "node:console";
 const router = express.Router();
 
 //server directory
 router.get("/:id?", (req, res) => {
+    console.log("got rquest")
     const { id } = req.params;
+    const {uid} = req.cookies;
+    
+    const user = UserData.find((user)=>{
+        return user.id == uid;
+    })
+    console.log(user)
+
+    if(!uid || !user){
+        res.status(401).json({message:"unauthorized"})
+        return
+    }
+
 
     if (!id) {
         const files = FolderData[0].files.map((data) => {

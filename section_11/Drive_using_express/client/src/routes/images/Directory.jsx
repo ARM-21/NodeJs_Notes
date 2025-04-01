@@ -56,7 +56,7 @@ export default function Directory() {
     console.log("filename", list)
     const response = await fetch(`http://${url}:4000/${type}/${list.filename}?action=delete`, {
       method: 'DELETE',
-      headers: { dirid: list.parentId }
+      headers: { dirid: list.parentId },
     })
     getDirectoryInfo(params.name)
     // getData(params)
@@ -202,7 +202,7 @@ export default function Directory() {
                 <li key={id} className='folder-item'>
                   <p className='folder-name'>{name}</p>
                   <div className='folder-actions'>
-                    <a href={`/${id}`} className='folder-btn'>
+                    <a href={`/directory/${id}`} className='folder-btn'>
                       <button className='action-btn open-btn'>Open</button>
                     </a>
                     <span className='folder-btn'>
