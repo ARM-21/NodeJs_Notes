@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from '../register/register.module.css';
 import { useNavigate } from 'react-router';
+import {toast, ToastContainer} from 'react-toastify'
 
 export default function Login() {
 const [userData,setUserData] = useState({email:'',password:''})
@@ -21,7 +22,7 @@ const [error,setError]= useState('')
       alert("ENter all the values");
       return;
     }
-
+    
    const response = await  fetch('http://localhost:4000/user/login',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -32,12 +33,17 @@ const [error,setError]= useState('')
     console.log(message)
     if(message?.error){
       setLoginStatus(true)
+      toast(message.error,{autoClose:1000})
       setError(message.error)
     }
 
     if(response.status == 200){
       // ${(await response.json()).userId}
-      navigator(`/user/${message.userDir}`)
+      toast("Logging in",{autoClose:"1000"})
+      setTimeout(()=>{
+
+        navigator(`/user/${message.userDir}`)
+      },2000)
      
     }
 
@@ -46,7 +52,10 @@ const [error,setError]= useState('')
 
   }
 
-  return (
+  let notify = () => toast('Login Successfully');
+  return ( 
+    <>
+    <ToastContainer autoClose="2000"/>
     <div className={styles.formContainer}>
       <h2>Login Form</h2>
       <form method="post" action="/user" id='loginDetails' onSubmit={handleSubmit}>
@@ -67,5 +76,6 @@ const [error,setError]= useState('')
                 </div>
       </form>
     </div>
+    </>
   )
 }

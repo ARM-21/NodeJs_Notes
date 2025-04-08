@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from './register.module.css'
 import { useNavigate } from 'react-router';
+import {toast, ToastContainer} from 'react-toastify'
 
 export default function Register() {
   const [userData, setUserData] = useState({ username: '', email: '', password: '123' })
@@ -42,11 +43,14 @@ export default function Register() {
     })
     const data = await response.json()
 
-    setRegistrationStatus(true);
-    if (data.error) {
-      setError(data.error);
+    
+    if (data.status != 200) {
+      setError(data.error); 
+      toast(data.message)
     }
     else if (response.status == 200) {
+      setRegistrationStatus(true);
+      toast('Register Successfully')
       setTimeout(() => {
         navigator('/login')
       }, 3000)
@@ -55,6 +59,8 @@ export default function Register() {
   }
 
   return (
+    <>
+    <ToastContainer autoClose="2000"/>
     <div className={styles.formContainer}>
       <h2>Registration Form</h2>
       <form onSubmit={handleSubmit}>
@@ -88,5 +94,6 @@ export default function Register() {
         </div>
       </form>
     </div>
+    </>
   )
 }
