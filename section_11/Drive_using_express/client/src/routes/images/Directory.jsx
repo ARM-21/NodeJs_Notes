@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './images.css'; // Importing CSS file
-import { Link, useOutletContext, useParams } from 'react-router';
+import { useNavigate, useOutletContext, useParams } from 'react-router';
 import RenameModal from '../../components/rename/RenameModal';
 import DeleteModal from '../../components/delete/DeleteModal';
 import SearchBar from '../../components/SearchBar/searchFile';
@@ -18,9 +18,10 @@ export default function Directory() {
        handleNo,
         deleteModalRef, 
         getDirectoryInfo, setRename, renameRef, isRename, url } = useOutletContext()
-  const [load, setLoad] = useState("Loading...");
+    const [load, setLoad] = useState("Loading...");
     const [newFolder, setNewFolder] = useState({ showModal: false });
     const newFolderModalRef = useRef(null);
+    const navigator = useNavigate()
   
   const params = useParams()
   useEffect(() => {
@@ -57,7 +58,13 @@ export default function Directory() {
     const response = await fetch(`http://${url}:4000/${type}/${list.filename}?action=delete`, {
       method: 'DELETE',
       headers: { dirid: list.parentId },
+      credentials:'include'
     })
+    console.log("homejsx",response.status)  
+    if(response.status == 401){
+      navigator('/login')
+      return
+    }
     getDirectoryInfo(params.name)
     // getData(params)
 

@@ -1,27 +1,28 @@
 import React, { forwardRef, useEffect, useState } from "react";
 import styles from "./folderModal.module.css";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const FolderModal = forwardRef(({ onClose,setNewFolderModal }, ref) => {
   const [folderName, setFolderName] = useState({name:'',sendRequest:false});
   const paths = useParams()
+  const navigator = useNavigate()
   // console.log(paths)
   async function createFolder() {
-    
     if(folderName.sendRequest){
-      const response = await fetch(`http://192.168.100.7:4000/directory/${paths.name || ''}`,{
+      const response = await fetch(`http://localhost:4000/directory/${paths.name || ''}`,{
         method:"POST",
         headers:{"content-type":"application/json","dirname":folderName.name},
+        credentials:'include'
       })
+      if(response.status == 401){
+        navigator('/login')
+      }
       const data = await response.json();
       setFolderName((prev)=>{ return {...prev,sendRequest:false,name:''}})
       setNewFolderModal((prev)=>{return {...prev,showModal:false}})
       window.alert(data.message)
     }
-   
-   
   }
-
   useEffect(()=>{
     createFolder()
   },[folderName.sendRequest])

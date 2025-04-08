@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import AddFile from './components/AddUserFile/AddFile.jsx'
-import { Outlet, useParams } from 'react-router'
+import { Outlet, useNavigate, useParams } from 'react-router'
 // Importing CSS file
 const url = 'localhost'
 export default function Home() {
@@ -9,21 +9,25 @@ export default function Home() {
   const [directoryFiles, setDirectoryFiles] = useState([]);
   const [deleteModal, setDeleteModal] = useState({ deleteFile: false, showModal: false, filename: '',type:'' });
   const [isRename, setRename] = useState({ filename: '', id :'',showModal: false, type:'' })
+  const navigator = useNavigate()
   
 
   const deleteModalRef = useRef(null)
   const renameRef = useRef(null)
   
   async function getDirectoryInfo(params=''){
-    fetch(`http://${url}:4000/directory/${params}`,{
+    const response = await  fetch(`http://${url}:4000/directory/${params}`,{
       credentials:'include'
     })
-    .then((res) => res.json())
-    .then((data) => {
-      // console.log(data)
+    const data = await response.json();  
+    console.log("homejsx",response.status)  
+      if(response.status == 401){
+          navigator("/login")
+          return;
+      }
       setFiles(data.files);
-      setDirectoryFiles(data.directories)
-    });
+      setDirectoryFiles(data.directories);
+
   }
 
       //handling delete modal confirm and rejection

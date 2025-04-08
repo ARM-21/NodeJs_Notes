@@ -26,7 +26,7 @@ const routes = createBrowserRouter([
   path: "/user",
   element: <Home />,
   children:[{
-      path: ':id',
+      path: ':name',
       element: <Directory />,
   },
 

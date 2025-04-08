@@ -3,40 +3,33 @@ import express from "express";
 import path from "node:path";
 import FolderData from "../FolderDB.json" with {type: "json"};
 import FilesData from "../FilesDB.json" with {type: "json"};
-import UserData from "../UserDB.json" with {type:"json"};
+import UserDetails from "../UserDB.json" with {type:"json"};
 import { rm, writeFile } from "node:fs";
-import { dir } from "node:console";
 const router = express.Router();
 
 //server directory
 router.get("/:id?", (req, res) => {
-    console.log("got rquest")
-    const { id } = req.params;
-    const {uid} = req.cookies;
-    
-    const user = UserData.find((user)=>{
-        return user.id == uid;
-    })
-    console.log(user)
+    console.log("got rquest" )
+   
 
-    if(!uid || !user){
-        res.status(401).json({message:"unauthorized"})
-        return
-    }
-
-
+    const { id } = req.params
     if (!id) {
-        const files = FolderData[0].files.map((data) => {
+        const {uid} = req.cookies;
+
+        const folder = FolderData.find((folder)=>{
+            return folder.userId == uid
+        })
+        const files = folder.files.map((data) => {
             return FilesData.find((file) => {
                 return file.id == data
             })
         });
 
         if (!files) {
-            res.json({ message: "FOlder Not Found" });
+            res.json({ message: "Folder Not Found" });
             return
         }
-        const directories = FolderData[0].directories.map((directory) => {
+        const directories = folder.directories.map((directory) => {
             return FolderData.find(({ id }) => { return id == directory })
         })
         res.status(200).json({ ...FolderData[0], files, directories })
@@ -60,14 +53,14 @@ router.get("/:id?", (req, res) => {
         })
         res.status(200).json({ ...folder, files, directories })
     }
-
-
 })
 //create directory 
 router.post('/:parentId?', async (req, res) => {
-    const directoryName = req.headers.dirname
+
+   
+    const directoryName = req.headers.dirname;
     /**optional if user want to upload in root folder*/
-    const parentDirId = req.params.parentId || FolderData[0].id;
+    const parentDirId = req.params.parentId || req.user.rootDirId;
     const folderId = crypto.randomUUID();
     const basePath = `./storage/${folderId}`
     try {
@@ -90,6 +83,7 @@ router.post('/:parentId?', async (req, res) => {
             id: folderId,
             name: directoryName,
             parentId: parentDirId,
+            userId:uid,
             files: [],
             directories: []
         })
@@ -110,7 +104,7 @@ router.delete('/:folderId?', (req, res) => {
     //folder id
     const folderId = req.params.folderId;
     //parent directory id
-    const parentIdUser = req.headers.dirid || FolderData[0].id;
+    const parentIdUser = req.headers.dirid || req.user.rootDirId;
 
     //main folder index
     let folderIndex = FolderData.findIndex(({ id }) => id == folderId)
@@ -205,6 +199,7 @@ router.delete('/:folderId?', (req, res) => {
 })
 
 router.patch("/:id", async (req, res) => {
+
     const folderId = req.params.id;
     const newname = req.headers.newname
     const folder = FolderData.find(({ id }) => {

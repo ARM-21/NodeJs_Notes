@@ -1,8 +1,10 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "./renameModal.css"; // Import CSS
+import { useNavigate } from "react-router";
 
 const RenameModal = forwardRef( function (props, ref) {
   const [newName, setNewName] = useState('');
+  const navigator = useNavigate()
   const params = props.params;
 
 //short bug in renaming file  
@@ -15,20 +17,18 @@ async function handleRename()  {
     const response = await fetch(`http://${props.url}:4000/${props.filename.type}/${props.filename.id}?action=rename`,
     {method:'PATCH',
       headers:{newname:newName, "Content-Type":"application/json"},
+      credentials:"include"
     });
     console.log('rename dialog off')
     props.rename((prev)=>{return {...prev, showModal:false,id:'',filename:''}})
     props.getDirectoryInfo()
     // props.getData(params)
-    
-    if(response.status == 200){
+    if(response.status == 401){
+      navigator('/login')
+    }
+
       const resText = await response.text();
       alert(resText);
-    }
-    else{
-      alert('error occured')
-    }
-    
 
   }
  

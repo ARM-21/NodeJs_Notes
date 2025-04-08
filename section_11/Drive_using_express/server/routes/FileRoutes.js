@@ -1,6 +1,6 @@
 import FilesData from '../FilesDB.json' with { type: "json" };
 import FolderData from '../FolderDB.json' with {type: "json"};
-import fsPromises, { open, stat, } from "node:fs/promises";
+import fsPromises, { stat } from "node:fs/promises";
 import fs, { writeFile } from "node:fs";
 import express from "express";
 import path from "node:path";
@@ -18,8 +18,8 @@ router.get('/:id', async (req, res) => {
 
     console.log(file)
 
-    if(!file){
-        res.end(JSON.stringify({message:"FIle not Found"}))
+    if (!file) {
+        res.end(JSON.stringify({ message: "FIle not Found" }))
         return;
     }
     const fullPath = path.join(import.meta.dirname, '..', `/storage/${file.id}${file.extension}`)
@@ -67,8 +67,8 @@ router.delete('/:id', async (req, res) => {
     res.json({ success: 'true', 'message': 'deleted successfully' })
     //removing details from FilesDB.json
     const fileIndex = FilesData.findIndex((file) => { return file.id == req.params.id })
-    if(fileIndex == -1){
-        res.status(404).json({message:"File doesn't exists"})
+    if (fileIndex == -1) {
+        res.status(404).json({ message: "File doesn't exists" })
         return
     }
     FilesData.splice(fileIndex, 1)
@@ -126,15 +126,16 @@ router.patch('/:id', async (req, res) => {
 //file uploading 
 router.post('/:filename', async (req, res) => {
     const filename = req.params.filename;
+    
     //optinal users might not sent the parentId for root
-    const parentDirID  = req.headers.dirid || FolderData[0].id;
+    const parentDirID = req.headers.dirid || req.user.rootDirId;
     const extension = path.extname(filename);
     const id = crypto.randomUUID()
     const fileFullName = `${id}${extension}`
     try {
         const writeStream = fs.createWriteStream(`./storage/${fileFullName}`)
         req.pipe(writeStream)
-        
+
         writeStream.on('finish', () => {
             FilesData.push({
                 id,
@@ -143,21 +144,21 @@ router.post('/:filename', async (req, res) => {
                 parentId: parentDirID
             })
 
-            if(req.headers.dirid){
+            if (req.headers.dirid) {
                 const associatedFolder = FolderData.find((folder) => {
                     return folder.id == parentDirID
                 })
 
-                if(!associatedFolder){
-                    res.status(400).json({message:"NO folder Exists"})
+                if (!associatedFolder) {
+                    res.status(400).json({ message: "NO folder Exists" })
                     return
                 }
                 associatedFolder.files.push(id)
             }
-            else{
+            else {
                 FolderData[0].files.push(id)
             }
-            
+
 
             writeFile('./FolderDB.json', JSON.stringify(FolderData), (err) => {
                 if (err) {

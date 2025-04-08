@@ -37,7 +37,7 @@ const [error,setError]= useState('')
 
     if(response.status == 200){
       // ${(await response.json()).userId}
-      navigator(`/user/${message.userId}`)
+      navigator(`/user/${message.userDir}`)
      
     }
 
