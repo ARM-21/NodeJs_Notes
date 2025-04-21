@@ -20,7 +20,7 @@ export default function Home() {
     })
     .then((res) => res.json())
     .then((data) => {
-      // console.log(data)
+      console.log(data)
       setFiles(data.files);
       setDirectoryFiles(data.directories)
     });
