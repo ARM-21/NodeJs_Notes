@@ -3,12 +3,7 @@
     margin: 0;
     box-sizing: border-box;
 }
-#root{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* height: 50vh; */
-}
+
 
 /* style for user file add section */
 .user_add_file input:first-child{
@@ -52,9 +47,50 @@
     border: 2px 2px black;
 }
 
+/* hero section */
+.hero_section{
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    height: 100vh;
+}
 
 /* main container */
 #main_container{
 display: flex;
 flex-direction: column;
 }
+
+.Adding-section{
+    display: flex;
+    flex-direction: column;
+   align-items: center;
+   width: 33%;
+   margin:0 auto;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  button:disabled:hover {        
+    opacity: 0.5;                
+  }
+@media  (max-width: 850px) {
+   .hero_section{
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100vh;
+    padding: 0 20px;}
+    
+}
+
+@media  (max-width: 490px) {
+    .hero_section{
+     flex-direction: column;
+     height: 100vh;
+     padding: 0 20px;}
+  
+     
+ }

@@ -1,4 +1,4 @@
-import UserData from "../server/UserDB.json" with {type:'json'};
+import UserData from "../UserDB.json" with {type:'json'};
 
 export default function checkAuth(req,res,next){
     const {uid} = req.cookies;
@@ -10,5 +10,6 @@ export default function checkAuth(req,res,next){
         return
     }
     req.user = user;
+    console.log(user)
     next()
 }

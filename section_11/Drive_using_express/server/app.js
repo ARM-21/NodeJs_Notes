@@ -7,7 +7,7 @@ import UserRoutes from "./routes/UserRoutes.js"
 import cookieParser from 'cookie-parser';
 const port = 4000;
 const ip = '192.168.100.7'
-import checkAuth from './auth.js';
+import checkAuth from './middlewares/auth.js';
 //express application to create routes
 const app = express();
 

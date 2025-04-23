@@ -6,6 +6,7 @@ import DeleteModal from '../../components/delete/DeleteModal';
 import SearchBar from '../../components/SearchBar/searchFile';
 import { createPortal } from 'react-dom';
 import FolderModal from '../../components/NewFolder/FolderModal';
+import Navbar from '../../components/Navbar/Navbar';
 
 export default function Directory() {
   const { files, 
@@ -17,10 +18,9 @@ export default function Directory() {
        handleYes, 
        handleNo,
         deleteModalRef, 
-        getDirectoryInfo, setRename, renameRef, isRename, url } = useOutletContext()
+        getDirectoryInfo, setRename, renameRef, isRename, url, closeFolderModal, newFolderModalRef, newFolder, setNewFolder } = useOutletContext()
     const [load, setLoad] = useState("Loading...");
-    const [newFolder, setNewFolder] = useState({ showModal: false });
-    const newFolderModalRef = useRef(null);
+  
     const navigator = useNavigate()
   
   const params = useParams()
@@ -90,12 +90,11 @@ export default function Directory() {
       getDirectoryInfo(params.name);
     }
   }
-  const closeFolderModal = () => {
-    newFolderModalRef.current?.close();
-    setNewFolder({ showModal: false });
-  };
+
   return (
     <>
+
+    
       {/* Modals remain same */}
       {deleteModal.showModal &&
         createPortal(
@@ -121,7 +120,11 @@ export default function Directory() {
 
      
 
-      {newFolder.showModal && 
+  
+
+      <div className='directory-container'>
+        <SearchBar handleSearch={handleSearch} />
+        {newFolder.showModal && 
         createPortal(
         <FolderModal
           ref={newFolderModalRef}
@@ -129,19 +132,6 @@ export default function Directory() {
           onClose={closeFolderModal}
         />
       ,document.getElementById("root"))}
-
-      <div className='directory-container'>
-        <SearchBar handleSearch={handleSearch} />
-        <div className="header-section">
-          {/* <h1 className='directory-title'>Image Gallery</h1> */}
-          <button
-            className="new-folder-btn"
-            onClick={() => setNewFolder({ showModal: true })}
-          >
-            <img src="/folder.svg" alt="folderIcon" />
-            Create Folder
-          </button>
-        </div>
 
         {/* Files Section */}
         <section className='file-folder-merge-section'>

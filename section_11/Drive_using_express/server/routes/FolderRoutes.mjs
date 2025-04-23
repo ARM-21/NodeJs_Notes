@@ -5,8 +5,10 @@ import FolderData from "../FolderDB.json" with {type: "json"};
 import FilesData from "../FilesDB.json" with {type: "json"};
 import UserDetails from "../UserDB.json" with {type:"json"};
 import { rm, writeFile } from "node:fs";
+import validateId from "../middlewares/validateId";
 const router = express.Router();
 
+router.param('id',validateId)
 //server directory
 router.get("/:id?", (req, res) => {
     console.log("got rquest" )
@@ -57,7 +59,7 @@ router.get("/:id?", (req, res) => {
 //create directory 
 router.post('/:parentId?', async (req, res) => {
 
-   
+   const {uid} = req.cookies
     const directoryName = req.headers.dirname;
     /**optional if user want to upload in root folder*/
     const parentDirId = req.params.parentId || req.user.rootDirId;

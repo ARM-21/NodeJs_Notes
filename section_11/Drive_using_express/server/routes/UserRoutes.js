@@ -1,14 +1,22 @@
 import express from "express";
 import userDetails from "../UserDB.json" with { type: "json" };
 import directoryDetails from "./../FolderDB.json" with {type:"json"};
+import auth from "./../middlewares/auth.js"
 import crypto from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
+import validateId from "../middlewares/validateId.js";
 
 const router = express.Router();
+
+
+router.param('id',validateId)
+
 
 router.post("/register", async (req, res) => {
 
     try{
+
+        res.redirect
         const {username, email, password} = req.body.formData
         const alreadyExists = userDetails.find((user)=>{
             return email== user.email
@@ -93,6 +101,33 @@ router.post("/login", async (req, res) => {
 
 
 })
+router.post("/logout", auth,async (req, res) => {
+  const {uid} = req.cookies;
+    try{
+        console.log('logput')
+        res.cookie('uid',uid,{maxAge:0})
+        res.status(200).json({User:uid,message:'Success'})
+   
+    }
+    catch(err){
+        res.status(500).json({error:" Login unsuccessfull" + err})
+    }
+
+
+})
+router.get("/", auth, async (req, res) => {
+    const {uid} = req.cookies;
+      try{
+       
+          res.status(200).json({username:req.user.username,email:req.user.email})
+     
+      }
+      catch(err){
+          res.status(500).json({error:" Unauthorized user" + err})
+      }
+  
+  
+  })
 
 
 export default router;
