@@ -1,0 +1,1 @@
+we can send the array also while using the extended value in url-encoded({exteneded:true})
