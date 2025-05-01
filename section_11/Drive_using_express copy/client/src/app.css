@@ -1,0 +1,96 @@
+.body{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+
+/* style for user file add section */
+.user_add_file input:first-child{
+    border: none;
+    border-bottom: navajowhite;
+    box-shadow: 0 0 10px slategray;
+    font-size: 1.5rem;
+    
+}
+.user_add_file form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+    justify-content: center;
+    align-items: center;
+}
+.user_add_file input:first-child:focus{
+    /* border: none; */
+    outline-color: rgb(105, 105, 124);
+    outline-width:0.2px ;
+    color: aliceblue;
+    border-bottom: rgb(54, 66, 227);
+   
+}
+#userFile{
+ outline: none;
+ /* visibility: hidden; */
+
+}
+.user_add_file form>input[type='submit']{
+    width: 80px;
+    font-size: 20px;
+    background-color: rgb(115, 115, 135);
+    color: white;
+}
+.user_add_file form>input[type='submit']:hover{
+    width: 80px;
+    font-size: 20px;
+    color: rgb(115, 115, 135);
+    background-color: white;
+    border: 2px 2px black;
+}
+
+/* hero section */
+.hero_section{
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    height: 100vh;
+}
+
+/* main container */
+#main_container{
+display: flex;
+flex-direction: column;
+}
+
+.Adding-section{
+    display: flex;
+    flex-direction: column;
+   align-items: center;
+   width: 33%;
+   margin:0 auto;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  
+  button:disabled:hover {        
+    opacity: 0.5;                
+  }
+@media  (max-width: 850px) {
+   .hero_section{
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100vh;
+    padding: 0 20px;}
+    
+}
+
+@media  (max-width: 490px) {
+    .hero_section{
+     flex-direction: column;
+     height: 100vh;
+     padding: 0 20px;}
+  
+     
+ }
