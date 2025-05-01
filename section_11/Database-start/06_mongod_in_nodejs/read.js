@@ -8,7 +8,9 @@ const client = new MongoClient(url);
 const test = client.db('test');
 
 
+const collectionGot  = test.collection('dummy')
 
+console.log(collectionGot.find());
 //read available collection
 const listCollections = await test.listCollections().toArray()
 console.log(listCollections) //dummy
