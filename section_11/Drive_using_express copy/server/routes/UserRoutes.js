@@ -16,7 +16,7 @@ router.post("/register", async (req, res) => {
 
     try{
 
-        res.redirect
+        // res.redirect
         const {username, email, password} = req.body.formData
         const alreadyExists = userDetails.find((user)=>{
             return email== user.email

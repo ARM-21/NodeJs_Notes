@@ -5,7 +5,7 @@ import FolderData from "../FolderDB.json" with {type: "json"};
 import FilesData from "../FilesDB.json" with {type: "json"};
 import UserDetails from "../UserDB.json" with {type:"json"};
 import { rm, writeFile } from "node:fs";
-import validateId from "../middlewares/validateId";
+import validateId from "../middlewares/validateId.js";
 const router = express.Router();
 
 router.param('id',validateId)

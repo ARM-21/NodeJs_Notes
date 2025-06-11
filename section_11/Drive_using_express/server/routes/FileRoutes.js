@@ -4,28 +4,31 @@ import fsPromises, { stat } from "node:fs/promises";
 import fs, { writeFile } from "node:fs";
 import express from "express";
 import path from "node:path";
-import validateId from '../middlewares/validateId';
+import validateId from '../middlewares/validateId.js';
 const router = express.Router();
 
 
 //validation for id
-router.param('id',validateId)
+router.param('id', validateId)
 //serves static files
 router.get('/:id', async (req, res) => {
     try {
+        const db = req.db;
         const id = req.params.id
+        const fileCollection = db.collection('files');
         console.log(id)
-        const fileData = FilesData.find((filesid) => {
-            return id == filesid.id
-        })
+
+        //look for file
+        const fileData = await fileCollection.findOne({ id: id })
         if (!fileData) {
-            res.status(401).json({ message: "file doesn't exits " })
+            res.status(401).json({ message: "file doesn't exists " })
             return;
         }
         console.log(fileData)
-        const parentFolder = FolderData.find((folder) => {
-            return folder.id == fileData.parentId;
-        })
+
+        //look for folder as we have userId in it to check
+        const folderCollection = db.collection('folders');
+        const parentFolder = await folderCollection.findOne({ id: fileData.parentId })
         console.log("parent", parentFolder)
         const doesUserMatch = parentFolder.userId == req.cookies.uid;
 
@@ -34,21 +37,21 @@ router.get('/:id', async (req, res) => {
             return;
         }
 
-        const file = FilesData.find((file) => {
-            console.log(file.id)
-            return file.id == id
-        });
+        // const file = FilesData.find((file) => {
+        //     console.log(file.id)
+        //     return file.id == id
+        // });
 
-        console.log(file)
+        // console.log(file)
 
-        if (!file) {
-            res.end(JSON.stringify({ message: "FIle not Found" }))
-            return;
-        }
-        const fullPath = path.join(import.meta.dirname, '..', `/storage/${file.id}${file.extension}`)
+        // if (!fileData) {
+        //     res.end(JSON.stringify({ message: "FIle not Found" }))
+        //     return;
+        // }
+        const fullPath = path.join(import.meta.dirname, '..', `/storage/${fileData.id}${fileData.extension}`)
 
         if (req.query.action == 'download') {
-          return  res.download(fullPath)
+            return res.download(fullPath)
             // res.setHeader('Content-Disposition', `attachment; filename=${path.basename(file.name)}`)
         }
         res.sendFile(fullPath, (err) => {
@@ -74,18 +77,20 @@ router.get('/favicon.ico', (req, res) => {
     })
 })
 
-
-
 //deleting the file
 router.delete('/:id', async (req, res) => {
     //extracts the particular file details
-    const fileDetails = FilesData.find((file) => {
-        return file.id == req.params.id
-    });
+    const db = req.db;
+    const fileCollection = db.collection('files');
+    const fileDetails = await fileCollection.findOne({ id: req.params.id })
+    //returns if file doesn't exists
+    if (!fileDetails) {
+        res.status(401).json({ message: "file not found" })
+        return
+    }
+    const folderCollection = db.collection('folders')
+    const parentFolder = await folderCollection.findOne({ id: fileDetails.parentId })
 
-    const parentFolder = FolderData.find((folder) => {
-        return folder.id == fileDetails.parentId;
-    })
     console.log("parent", parentFolder)
     const doesUserMatch = parentFolder.userId == req.cookies.uid;
 
@@ -95,11 +100,7 @@ router.delete('/:id', async (req, res) => {
     }
 
 
-    //returns if file doesn't exists
-    if (!fileDetails) {
-        res.status(401).json({ message: "file not found" })
-        return
-    }
+
     const filename = `${fileDetails.id}${fileDetails.extension}`
     //checks if it is a folder or a file to act accordingly
     const status = (await stat(`./storage/${filename}`)).isDirectory()
@@ -111,15 +112,20 @@ router.delete('/:id', async (req, res) => {
     }
     res.json({ success: 'true', 'message': 'deleted successfully' })
     //removing details from FilesDB.json
-    const fileIndex = FilesData.findIndex((file) => { return file.id == req.params.id })
-    if (fileIndex == -1) {
-        res.status(404).json({ message: "File doesn't exists" })
-        return
-    }
-    FilesData.splice(fileIndex, 1)
+
+    const isFileDeleted = await fileCollection.deleteOne({id:fileDetails.id})
+
+    // const fileIndex = FilesData.findIndex((file) => { return file.id == req.params.id })
+    // if (fileIndex == -1) {
+    //     res.status(404).json({ message: "File doesn't exists" })
+    //     return
+    // }
+    // FilesData.splice(fileIndex, 1)
 
 
     //removing that particular file from Folder's files also
+
+
     const associatedFolder = FolderData.find((folder) => {
         return folder.id == fileDetails.parentId
     })

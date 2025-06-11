@@ -15,45 +15,27 @@ router.param('id',validateId)
 router.post("/register", async (req, res) => {
 
     try{
-
-        res.redirect
         const {username, email, password} = req.body.formData
-        const alreadyExists = userDetails.find((user)=>{
-            return email== user.email
-        })
-        if(alreadyExists){
-            res.status(409).json({error:"Email already exists ",message:"a User with email already exists"})
-            return;
+        const userCollection = req.db.collection("users");
+        const userExists =  await userCollection.findOne({email:email})
+        
+        if(userExists != null){
+            return res.status(500).json({message:"User Already existed", email})
+            
         }
-        const id = crypto.randomUUID();
-        const dirId = crypto.randomUUID();
+        //folder creation
+        const userFolder = req.db.collection("folders");
+         const id = crypto.randomUUID();
+         const dirId = crypto.randomUUID();
 
-        directoryDetails.push({
-            id:dirId,
-            name:`root-${email}`,
-            parentId:null,
-            userId:id,
-            directories:[],
-            files:[]
-        })
-        userDetails.push({
-            username,
-            email,
-            rootDirId:dirId,
-            password,
-            id
-        })
-        console.log(userDetails)
-        try{
-            const response =  await writeFile('./UserDB.json', JSON.stringify(userDetails))
-            const dirResponse =  await writeFile('./FolderDB.json', JSON.stringify(directoryDetails))
-            const dir = await mkdir(`./storage/${dirId}`)
-            res.status(200).json({message:"User Registration Successfull"})
-        }catch(err){
-            res.status(500).json({error:"Error occured ",message:"error occured !! User Registration Unsuccessfull"})
+     let isUserCreated = await userCollection.insertOne({username,email,password,id,rootDirId:dirId})
+      let isFolderCreated = await userFolder.insertOne({name:`root-${email}`,id:dirId,parentId:null,userId:id,directories:[],files:[]})
 
-        }
-      
+      if(isUserCreated.acknowledged & isFolderCreated.acknowledged){
+        const dir = await mkdir(`./storage/${dirId}`)
+          return res.status(200).json({message:"registration successfull"})
+      }
+
 
     }
     catch(err){
@@ -65,35 +47,27 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
     try{
-        
-    const userData = req.body.formData
-    console.log(userData.email)
-    console.log(userData.password)
+        const db = req.db;
+        const userData = req.body.formData
+        const userCollection = db.collection('users');
 
-        const userIndex = userDetails.findIndex((user)=>{
-            console.log(user)
-            return user.email == userData.email;
-        })
-        console.log(userIndex)
-        if(userIndex < 0){
+        
+        const user = await userCollection.findOne({email:userData.email});
+        console.log("data of databse ",user)
+
+        if(user == null){
             res.status(404).json({error:"User Doesn't Exists"})
                 return;
         }
-        const userObj = userDetails[userIndex]
-        if(userObj.email != userData.email || userObj.password != userData.password){
-            res.status(404).json({error:"Username or password error"})
-            return;
-        }
-    //    const userDirectory = directoryDetails.find((dir)=>{
-    //     console.log(dir.name)
-    //         return dir.name == `root-${userObj.email}`
-    //     })
-        // console.log(userDirectory)
-        // `/user/${userObj.id}`})
-            res.cookie('uid',userObj.id,{sameSite:'none',secure:true})
-            res.status(200).json({message:"User Login Successfull",userId:userObj.id,userDir:userObj.rootDirId})
-
+        if(user.password === userData.password){
+            res.cookie('uid',user.id,{sameSite:'none',secure:true})
+            res.status(200).json({message:"User Login Successfull",userId:user.id,userDir:user.rootDirId})
                 return;
+        }
+        else{
+            res.status(404).json({error:"User credential Mismatches"})
+                return;
+        }
     }
     catch(err){
         res.status(500).json({error:" Login unsuccessfull" + err})
