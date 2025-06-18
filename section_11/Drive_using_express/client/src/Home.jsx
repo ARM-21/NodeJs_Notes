@@ -33,7 +33,7 @@ export default function Home() {
     }
     console.log(data)
     setFiles(data.files);
-    setDirectoryFiles(data.directories);
+    setDirectoryFiles(data.folders);
 
   }
 

@@ -139,7 +139,7 @@ export default function Directory() {
           <h2>Your Files</h2>
           <ul className='file-list'>
             {files?.length > 0 ? (
-              files.map(({ id, name, extension, parentId }) => (
+              files.map(({ _id:id, name, extension, parentId }) => (
                 <li key={id} className="file-item">
                 <p className="file-name">
                   {name.includes(".") ?name : name + extension}
@@ -195,7 +195,7 @@ export default function Directory() {
           <h2>Your Folders</h2>
           <ul className='folder-list'>
             {directoryFiles?.length > 0 ? (
-              directoryFiles.map(({ id, name, parentId }) => (
+              directoryFiles.map(({ _id:id, name, parentId }) => (
                 <li key={id} className='folder-item'>
                   <p className='folder-name'>{name}</p>
                   <div className='folder-actions'>

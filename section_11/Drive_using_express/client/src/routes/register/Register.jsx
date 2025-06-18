@@ -36,15 +36,16 @@ export default function Register() {
       return;
     }
 
-    const response = await fetch('http://192.168.100.7:4000/user/register', {
+    const response = await fetch('http://localhost:4000/user/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ formData: userData })
+
     })
     const data = await response.json()
 
     
-    if (data.status != 200) {
+    if (response.status != 200) {
       setError(data.error); 
       toast(data.message)
     }

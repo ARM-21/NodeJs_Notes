@@ -98,9 +98,6 @@ router.delete('/:id', async (req, res) => {
         res.status(401).json({ message: "unauthorized user" })
         return
     }
-
-
-
     const filename = `${fileDetails.id}${fileDetails.extension}`
     //checks if it is a folder or a file to act accordingly
     const status = (await stat(`./storage/${filename}`)).isDirectory()
@@ -126,28 +123,32 @@ router.delete('/:id', async (req, res) => {
     //removing that particular file from Folder's files also
 
 
-    const associatedFolder = FolderData.find((folder) => {
-        return folder.id == fileDetails.parentId
-    })
+    // const associatedFolder = FolderData.find((folder) => {
+    //     return folder.id == fileDetails.parentId
+    // })
 
-    associatedFolder.files = associatedFolder.files.filter((file) => {
-        return file != fileDetails.id
-    })
+    // associatedFolder.files = associatedFolder.files.filter((file) => {
+    //     return file != fileDetails.id
+    // })
+
+    /**i have commented it  jun 11 */
+    // await folderCollection.updateOne({ id: fileDetails.parentId },{$set:{files:}});
     // writes in FolderDB.json
-    const writeInFolder = writeFile(`./FolderDB.json`, JSON.stringify(FolderData), (err) => {
-        if (err) {
-            console.log(err)
-        }
-    })
-    //writes in filesDB.json
-    const writeInFile = writeFile(`./FilesDB.json`, JSON.stringify(FilesData), (err) => {
-        if (err) {
-            console.log(err)
-        }
-    })
+    // const writeInFolder = writeFile(`./FolderDB.json`, JSON.stringify(FolderData), (err) => {
+    //     if (err) {
+    //         console.log(err)
+    //     }
+    // })
+    // //writes in filesDB.json
+    // const writeInFile = writeFile(`./FilesDB.json`, JSON.stringify(FilesData), (err) => {
+    //     if (err) {
+    //         console.log(err)
+    //     }
+    // })
 
 
-})
+}
+)
 
 router.patch('/:id', async (req, res) => {
     const { id } = req.params;
@@ -198,6 +199,7 @@ router.patch('/:id', async (req, res) => {
 })
 //file uploading 
 router.post('/:filename', async (req, res) => {
+    const folderCollection = req.db;
     const filename = req.params.filename;
 
     //optinal users might not sent the parentId for root
