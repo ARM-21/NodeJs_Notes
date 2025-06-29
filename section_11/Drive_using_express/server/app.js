@@ -18,8 +18,8 @@ try {
     //global middleware for each request
     app.use(cors({
         origin: ['http://localhost:5173'], // Or specify allowed origins
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization','dirid','dirname'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization','dirid','dirname','newname'],
         credentials: true
     }));
     app.use((req, res, next) => {
@@ -31,7 +31,6 @@ try {
     app.use('/user', UserRoutes)
     app.use('/directory', checkAuth, FolderRoutes)
     app.use('/file', checkAuth, FileRoutes)
-
     app.use((err, req, res, next) => {
         res.status(500).json({ message: "Something Went Wrong" })
     })

@@ -21,7 +21,8 @@ async function handleRename()  {
     });
     console.log('rename dialog off')
     props.rename((prev)=>{return {...prev, showModal:false,id:'',filename:''}})
-    props.getDirectoryInfo()
+    console.log(response.headers.get('id'))
+    props.getDirectoryInfo(response.headers.get('id'))
     // props.getData(params)
     if(response.status == 401){
       navigator('/login')

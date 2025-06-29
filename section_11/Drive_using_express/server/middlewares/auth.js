@@ -10,6 +10,6 @@ export default async function checkAuth(req,res,next){
         return
     }
     req.user = user;
-    console.log(user)
+    console.log(user,'user is behind')
     next()
 }

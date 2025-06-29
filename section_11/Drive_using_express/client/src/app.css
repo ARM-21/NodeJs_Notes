@@ -4,6 +4,9 @@
     box-sizing: border-box;
 }
 
+*{
+    box-sizing: border-box;
+}
 
 /* style for user file add section */
 .user_add_file input:first-child{
