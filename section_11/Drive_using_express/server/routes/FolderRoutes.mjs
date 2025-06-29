@@ -61,7 +61,6 @@ router.post('/:parentId?', async (req, res) => {
         }
         else {
             return res.status(404).json({ message: "Folder doesn't exists" })
-            FolderData[0].directories.push(folderId)
         }
         const newFolder = await folderCollection.insertOne({
             name: directoryName,

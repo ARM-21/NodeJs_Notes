@@ -139,7 +139,12 @@ export default function Directory() {
           <h2>Your Files</h2>
           <ul className='file-list'>
             {files?.length > 0 ? (
+<<<<<<< HEAD
               files.map(({ _id:id, name, extension, parentId }) => (
+=======
+              files.map(({ id, name, extension, parentId }) => (
+                
+>>>>>>> database-branch
                 <li key={id} className="file-item">
                 <p className="file-name">
                   {name.includes(".") ?name : name + extension}
@@ -199,6 +204,7 @@ export default function Directory() {
                 <li key={id} className='folder-item'>
                   <p className='folder-name'>{name}</p>
                   <div className='folder-actions'>
+                  console.log(id)
                     <a href={`/directory/${id}`} className='folder-btn'>
                       <button className='action-btn open-btn'>Open</button>
                     </a>
