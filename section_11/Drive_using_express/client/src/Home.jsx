@@ -25,7 +25,6 @@ export default function Home() {
     const response = await fetch(`http://${url}:4000/directory/${params}`, {
       credentials: 'include'
     })
-<<<<<<< HEAD
     const data = await response.json();
     console.log("homejsx", response.status)
     if (response.status == 401) {
@@ -36,14 +35,6 @@ export default function Home() {
     setFiles(data.files);
     setDirectoryFiles(data.folders);
 
-=======
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data)
-      setFiles(data.files);
-      setDirectoryFiles(data.directories)
-    });
->>>>>>> database-branch
   }
 
   //handling delete modal confirm and rejection

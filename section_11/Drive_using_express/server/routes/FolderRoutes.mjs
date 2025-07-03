@@ -1,10 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import express from "express";
 import path from "node:path";
-import FolderData from "../FolderDB.json" with {type: "json"};
-import FilesData from "../FilesDB.json" with {type: "json"};
-import UserDetails from "../UserDB.json" with {type: "json"};
-import { rm, writeFile } from "node:fs";
+import { rm } from "node:fs/promises";
 import validateId from "../middlewares/validateId.js";
 import { Db, ObjectId } from "mongodb";
 const router = express.Router();
@@ -67,46 +64,92 @@ router.post('/:parentId?', async (req, res) => {
             parentId: parentDirId,
             userId: uid,
         })
-        const basePath = `./storage/${newFolder.insertedId.toString()}`
-        const makeDirectory = await mkdir(basePath)
-        res.json({ message: "Folder Created successfully" })
+        // const basePath = `./storage/${newFolder.insertedId.toString()}`
+        // const makeDirectory = await mkdir(basePath)
+        res.setHeader('Access-Control-Expose-Headers', 'id');
+        res.setHeader('id', parentDirId)
+        res.status(200).json({ message: "Folder Created successfully" })
     } catch (error) {
         console.log(error)
         res.status(400).end(JSON.stringify({ message: "error occured" }))
     }
 })
 //delete folders
-router.delete('/:folderId?', async (req, res) => {
+router.delete('/:folderId?', async (req, res, next) => {
+    // try {
     //folder id
     const folderId = req.params.folderId;
     //parent directory id
     const parentIdUser = req.headers.dirid || req.user.rootDirId;
     //database collection
-
     const fileCollection = req.db.collection('files')
     const folderCollection = req.db.collection('folders')
-
     //main folder index
-    let folder = await folderCollection.findOne({_id:new ObjectId(String(folderId))})
-
+    let folder = await folderCollection.findOne({ _id: new ObjectId(String(folderId)) })
     if (!folder) {
         res.status(401).json({ message: "FOlder doesn't Exists" })
         return
     }
-    let deleteFolderItself = await folderCollection.deleteOne({_id:new ObjectId(String(folderId))})
-    let childFolderDelete = await folderCollection.deleteMany({parentId:folderId})
-    let fileInsideFolderItself = await fileCollection.deleteMany({parentId:folderId})
-    console.log(childFolderDelete)
 
-    // rm(`./storage/${folderId}`, { force: true, recursive: true }, (err) => {
-    //     if (!res.headersSent && err) {
-    //         res.status(504).json({ message: "Error deleting FOlder" })
-    //         return
-    //     }
-    // })
+    async function getAllContents(folderId) {
+        if (folderId == '' || folderId == undefined) {
+            return res.status('401').json({ message: "The User Request is invalid!" })
+        }
+        let folders = await folderCollection.find({ parentId: folderId }, { projection: { name: 1 } }).toArray()
+        let files = await fileCollection.find({ parentId: folderId }, { projection: { name: 1,extension:1 } }).toArray()
 
-    res.status(200).json({ message: "removed sucessfully" })
 
+        for (const folder of folders) {
+            let { files: childFiles, folders: childFolders } = await getAllContents(folder._id.toString())
+            files = [...files, ...childFiles]
+            folders = [...folders, ...childFolders]
+            // return [...files,...folders]
+        }
+
+        return { files, folders }
+    }
+    const { files, folders } = await getAllContents(folderId)
+    console.log(files)
+    console.log(folders)
+    let deleteManyFiles, deleteManyFolders;
+
+try {
+    // Delete files from DB
+    if (files.length > 0) {
+        deleteManyFiles = await fileCollection.deleteMany({
+            _id: { $in: files.map(f => f._id) }
+        });
+    }
+
+    // Delete folders from DB (including root folder)
+    if (folders.length > 0 || folder) {
+        deleteManyFolders = await folderCollection.deleteMany({
+            _id: { $in: [new ObjectId(String(folderId)), ...folders.map(f => f._id)] }
+        });
+    }
+
+    // Check DB actually deleted
+    if ((files.length > 0 && (!deleteManyFiles || deleteManyFiles.deletedCount === 0)) ||
+        ((folders.length > 0 || folder) && (!deleteManyFolders || deleteManyFolders.deletedCount === 0))) {
+        throw new Error("DB delete failed");
+    }
+
+    // Now safely delete physical files
+    for (const { _id, extension } of files) {
+        await rm(`./storage/${_id.toString()}${extension}`);
+    }
+
+    return res.status(200).json({ message: "Folder and its contents deleted successfully." });
+
+} catch (err) {
+    console.error("Delete failed:", err);
+
+    // Restore DB if we already removed something
+    if (files.length > 0) await fileCollection.insertMany(files);
+    if (folders.length > 0) await folderCollection.insertMany(folders);
+
+    return res.status(504).json({ message: "Error deleting folder or restoring data" });
+}
 
 })
 

@@ -139,12 +139,7 @@ export default function Directory() {
           <h2>Your Files</h2>
           <ul className='file-list'>
             {files?.length > 0 ? (
-<<<<<<< HEAD
               files.map(({ _id:id, name, extension, parentId }) => (
-=======
-              files.map(({ id, name, extension, parentId }) => (
-                
->>>>>>> database-branch
                 <li key={id} className="file-item">
                 <p className="file-name">
                   {name.includes(".") ?name : name + extension}
@@ -204,7 +199,6 @@ export default function Directory() {
                 <li key={id} className='folder-item'>
                   <p className='folder-name'>{name}</p>
                   <div className='folder-actions'>
-                  console.log(id)
                     <a href={`/directory/${id}`} className='folder-btn'>
                       <button className='action-btn open-btn'>Open</button>
                     </a>
@@ -221,7 +215,7 @@ export default function Directory() {
                     </span>
                     <span className='folder-btn'>
                       <button
-                        onClick={() => setDeleteModal((prev) => {return { ...prev, showModal: true, filename: name, parentId,type:'directory' }})}
+                        onClick={() => setDeleteModal((prev) => {return { ...prev, showModal: true, filename: id, parentId,type:'directory' }})}
                         className='action-btn delete-btn'
                       >
                         Delete
