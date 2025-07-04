@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import express from "express";
 import path from "node:path";
-import { rm } from "node:fs/promises";
+import { rm, stat } from "node:fs/promises";
 import validateId from "../middlewares/validateId.js";
 import { Db, ObjectId } from "mongodb";
 const router = express.Router();
@@ -28,7 +28,36 @@ router.get("/:id?", async (req, res) => {
         }
         const nestedFolders = await folderCollection.find({ parentId: id }).toArray()
         const nestedFiles = await fileCollection.find({ parentId: id }).toArray()
-        return res.status(200).json({ ...folder, files: [...nestedFiles], folders: [...nestedFolders] })
+        
+        // Add actual file sizes to the files
+        const filesWithSizes = await Promise.all(
+            nestedFiles.map(async (file) => {
+                try {
+                    const filePath = path.join(import.meta.dirname, '..', `/storage/${file._id}${file.extension}`)
+                    const stats = await stat(filePath)
+                    return {
+                        ...file,
+                        size: stats.size,
+                        createdAt: stats.birthtime || stats.ctime,
+                        modifiedAt: stats.mtime
+                    }
+                } catch (error) {
+                    console.error(`Error getting file stats for ${file.name}:`, error)
+                    return {
+                        ...file,
+                        size: 0,
+                        createdAt: new Date(),
+                        modifiedAt: new Date()
+                    }
+                }
+            })
+        )
+        
+        return res.status(200).json({ 
+            ...folder, 
+            files: filesWithSizes, 
+            folders: nestedFolders 
+        })
     } catch (err) {
         return res.status(501).json({ "message": "Server error Try again later" })
     }
@@ -177,4 +206,47 @@ router.patch("/:id", async (req, res) => {
     // const 
 
 })
+
+// Get breadcrumb path for a folder
+router.get("/:id/breadcrumbs", async (req, res) => {
+    const db = req.db;
+    const folderCollection = db.collection('folders');
+    const { uid } = req.cookies;
+    const id = req.params.id;
+
+    try {
+        const breadcrumbs = [];
+        let currentId = id;
+        
+        // Build breadcrumb path by traversing up the parent hierarchy
+        while (currentId) {
+            const folder = await folderCollection.findOne({ 
+                userId: uid, 
+                _id: new ObjectId(String(currentId)) 
+            });
+            
+            if (!folder) break;
+            
+            breadcrumbs.unshift({
+                id: folder._id.toString(),
+                name: folder.name
+            });
+            
+            // Move to parent folder
+            currentId = folder.parentId;
+        }
+        
+        // Add root folder at the beginning
+        breadcrumbs.unshift({
+            id: null,
+            name: 'My Files'
+        });
+        
+        res.json({ breadcrumbs });
+    } catch (error) {
+        console.error('Error getting breadcrumbs:', error);
+        res.status(500).json({ message: 'Error getting breadcrumbs' });
+    }
+});
+
 export default router;

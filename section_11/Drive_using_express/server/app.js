@@ -32,7 +32,7 @@ try {
     const db = await getConnection();
     //global middleware for each request
     app.use(cors({
-        origin: ['http://localhost:5173'], // Or specify allowed origins
+        origin: ['http://localhost:5173', 'http://localhost:5174'], // Or specify allowed origins
         methods: ['GET', 'POST', 'PUT', 'DELETE','PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization','dirid','dirname','newname'],
         credentials: true

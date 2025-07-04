@@ -10,56 +10,33 @@ import Register from "./routes/register/Register.jsx";
 
 const routes = createBrowserRouter([
   {
-  path: '/',
-  element: <LandingPage />,
-},
-{
-  path: 'register',
-  element: <Register />,
-}
-  , {
-  path: 'login',
-  element: <Login />,
-}
-  , 
-{
-  path: "/user",
-  element: <Home />,
-  children:[{
-      path: ':name',
-      element: <Directory />,
-  },
-
-
-//   {
-//     path: 'directory:id',
-//     element: <Directory />,
-// },
-
-]
-  },
-  // {
-  //       path: 'directory/:id',
-  //       element: <Directory />,
-  //   },
-  {
     path: '/',
+    element: <LandingPage />,
+  },
+  {
+    path: '/register',
+    element: <Register />,
+  },
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  {
+    path: "/drive",
     element: <Home />,
-    children:[
+    children: [
       {
-        path:"files",
-        element:<YourFiles/>,
-        index:true
-      },{
-        path:"directory/:name",
-        element:<Directory/>,
+        path: "",
+        element: <YourFiles />,
+        index: true
+      },
+      {
+        path: "directory/:id",
+        element: <Directory />,
       }
     ]
-
-
-}
-]
-)
+  }
+])
 function App() {
 
   return <RouterProvider router={routes} />

@@ -1,5 +1,3 @@
-import FilesData from '../FilesDB.json' with { type: "json" };
-import FolderData from '../FolderDB.json' with {type: "json"};
 import fsPromises, { stat } from "node:fs/promises";
 import fs, { writeFile } from "node:fs";
 import express from "express";

@@ -28,35 +28,37 @@
   animation: slideIn 0.2s ease-out;
 }
 
+.iconContainer {
+  margin-bottom: 1rem;
+}
+
+.uploadIcon {
+  width: 48px;
+  height: 48px;
+  color: var(--primary-color);
+  margin: 0 auto;
+  display: block;
+}
+
 .title {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   line-height: 1.4;
 }
 
-.input {
-  width: 100%;
-  padding: 0.875rem 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  transition: all 0.2s ease;
-  margin-bottom: 2rem;
-  box-sizing: border-box;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input::placeholder {
+.message {
   color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.fileName {
+  color: var(--text-primary);
+  font-weight: 600;
+  word-break: break-all;
 }
 
 .buttonGroup {
@@ -66,7 +68,7 @@
 }
 
 .cancelButton,
-.createButton {
+.confirmButton {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 12px;
@@ -90,26 +92,19 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.createButton {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+.confirmButton {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
 }
 
-.createButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+.confirmButton:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
-}
-
-.createButton:disabled {
-  background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
 }
 
 .cancelButton:focus,
-.createButton:focus {
+.confirmButton:focus {
   outline: 2px solid var(--primary-color);
   outline-offset: 2px;
 }
@@ -153,9 +148,8 @@
   }
   
   .cancelButton,
-  .createButton {
+  .confirmButton {
     width: 100%;
     padding: 1rem;
   }
 }
-  
