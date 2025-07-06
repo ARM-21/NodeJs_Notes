@@ -7,7 +7,14 @@ import FolderModal from './components/NewFolder/FolderModal.jsx';
 import styles from './Home.module.css';
 import { handleApiError, handleNetworkError, showSuccess } from './utils/errorHandler.js';
 
-const url = 'localhost';
+// Dynamic URL detection - you can change this based on your network setup
+const getServerUrl = () => {
+  // For development, you can manually set your server IP here
+  // Replace 'localhost' with your actual server IP if accessing from other devices
+  return '192.168.100.7'; // Change this to your server IP for network access
+};
+
+const url = getServerUrl();
 
 export default function Home() {
   const paths = useParams();
@@ -18,6 +25,7 @@ export default function Home() {
   const [isRename, setRename] = useState({ filename: '', id: '', showModal: false, type: '' });
   const [newFolder, setNewFolder] = useState({ showModal: false });
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingRef] = useState(useRef(null));
   const navigator = useNavigate();
 
   const deleteModalRef = useRef(null);
@@ -25,7 +33,14 @@ export default function Home() {
   const newFolderModalRef = useRef(null);
 
   async function getDirectoryInfo(params = '') {
+    // Prevent multiple concurrent requests
+    if (loadingRef.current === params) {
+      return;
+    }
+    
     setIsLoading(true);
+    loadingRef.current = params;
+    
     try {
       const response = await fetch(`http://${url}:4000/directory/${params}`, {
         credentials: 'include'
@@ -52,6 +67,7 @@ export default function Home() {
       handleNetworkError(error);
     } finally {
       setIsLoading(false);
+      loadingRef.current = null;
     }
   }
 
@@ -63,10 +79,10 @@ export default function Home() {
   async function handleYes() {
     if (deleteModal._id && deleteModal.type) {
       try {
-        // Use the correct API endpoint based on type
+        // Use the correct API endpoint based on type: 'directory' for folders, 'file' for files
         const apiEndpoint = deleteModal.type === 'folder' ? 'directory' : 'file';
         
-        const response = await fetch(`http://localhost:4000/${apiEndpoint}/${deleteModal._id}?action=delete`, {
+        const response = await fetch(`http://${url}:4000/${apiEndpoint}/${deleteModal._id}?action=delete`, {
           method: 'DELETE',
           headers: { 
             'dirid': deleteModal.parentId || paths.id || ''
@@ -83,7 +99,7 @@ export default function Home() {
         }
         
         // Show success toast
-        showSuccess(`${deleteModal.type === 'file' ? 'File' : 'Folder'} deleted successfully!`);
+        showSuccess(`${deleteModal.type === 'file' ? 'file' : 'directory'} deleted successfully!`);
         
         // Refresh the directory info
         getDirectoryInfo(paths.id || '');
@@ -108,13 +124,11 @@ export default function Home() {
   };
 
   useEffect(() => {
-    getDirectoryInfo();
-  }, []);
-
-  // Watch for route parameter changes to load directory content
-  useEffect(() => {
+    // Watch for route parameter changes to load directory content
     const folderId = paths.id || '';
-    getDirectoryInfo(folderId);
+    if (loadingRef.current !== folderId) {
+      getDirectoryInfo(folderId);
+    }
   }, [paths.id]);
 
   return (
@@ -174,7 +188,8 @@ export default function Home() {
               newFolderModalRef,
               newFolder,
               setNewFolder,
-              currentFolder
+              currentFolder,
+              setCurrentFolder
             }} />
           )}
         </div>

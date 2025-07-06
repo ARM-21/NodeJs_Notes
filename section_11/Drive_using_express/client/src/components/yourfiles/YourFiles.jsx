@@ -10,7 +10,7 @@ import { handleApiError, handleNetworkError, showSuccess } from "../../utils/err
 export default function YourFiles() {
   const [newFolder, setNewFolder] = useState({ showModal: false });
   const [loadMessage, setLoadMessage] = useState("Getting your files...");
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState('list'); // 'grid' or 'list'
   const [localSearchTerm, setLocalSearchTerm] = useState('');
   const navigate = useNavigate();
 
@@ -131,21 +131,51 @@ export default function YourFiles() {
     const extension = fileName.split('.').pop()?.toLowerCase();
     const iconMap = {
       // Images
-      'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'svg': '🖼️',
+      'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'svg': '🖼️', 'webp': '🖼️',
       // Documents
-      'pdf': '📄', 'doc': '📝', 'docx': '📝', 'txt': '📄',
+      'pdf': '📄', 'doc': '📝', 'docx': '📝', 'txt': '📄', 'rtf': '📄',
       // Spreadsheets
       'xls': '📊', 'xlsx': '📊', 'csv': '📊',
+      // Presentations
+      'ppt': '📊', 'pptx': '📊',
       // Archives
-      'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️',
+      'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️', 'tar': '🗜️', 'gz': '🗜️',
       // Videos
-      'mp4': '🎥', 'avi': '🎥', 'mov': '🎥', 'mkv': '🎥',
+      'mp4': '🎥', 'avi': '🎥', 'mov': '🎥', 'mkv': '🎥', 'wmv': '🎥', 'flv': '🎥',
       // Audio
-      'mp3': '🎵', 'wav': '🎵', 'flac': '🎵',
+      'mp3': '🎵', 'wav': '🎵', 'flac': '🎵', 'aac': '🎵', 'ogg': '🎵',
       // Code
-      'js': '💻', 'jsx': '💻', 'ts': '💻', 'tsx': '💻', 'html': '💻', 'css': '💻', 'py': '💻',
+      'js': '💻', 'jsx': '💻', 'ts': '💻', 'tsx': '💻', 'html': '💻', 'css': '💻', 'py': '💻', 'java': '💻', 'cpp': '💻', 'c': '💻',
+      // Others
+      'exe': '⚙️', 'msi': '⚙️', 'deb': '⚙️', 'rpm': '⚙️',
     };
     return iconMap[extension] || '📄';
+  }
+
+  // Get file extension color
+  function getFileExtensionColor(fileName) {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+    const colorMap = {
+      // Images - Blue tones
+      'jpg': '#3B82F6', 'jpeg': '#3B82F6', 'png': '#3B82F6', 'gif': '#3B82F6', 'svg': '#3B82F6', 'webp': '#3B82F6',
+      // Documents - Green tones
+      'pdf': '#10B981', 'doc': '#10B981', 'docx': '#10B981', 'txt': '#10B981', 'rtf': '#10B981',
+      // Spreadsheets - Yellow tones
+      'xls': '#F59E0B', 'xlsx': '#F59E0B', 'csv': '#F59E0B',
+      // Presentations - Orange tones
+      'ppt': '#F97316', 'pptx': '#F97316',
+      // Archives - Purple tones
+      'zip': '#8B5CF6', 'rar': '#8B5CF6', '7z': '#8B5CF6', 'tar': '#8B5CF6', 'gz': '#8B5CF6',
+      // Videos - Red tones
+      'mp4': '#EF4444', 'avi': '#EF4444', 'mov': '#EF4444', 'mkv': '#EF4444', 'wmv': '#EF4444', 'flv': '#EF4444',
+      // Audio - Pink tones
+      'mp3': '#EC4899', 'wav': '#EC4899', 'flac': '#EC4899', 'aac': '#EC4899', 'ogg': '#EC4899',
+      // Code - Cyan tones
+      'js': '#06B6D4', 'jsx': '#06B6D4', 'ts': '#06B6D4', 'tsx': '#06B6D4', 'html': '#06B6D4', 'css': '#06B6D4', 'py': '#06B6D4', 'java': '#06B6D4', 'cpp': '#06B6D4', 'c': '#06B6D4',
+      // Others - Gray tones
+      'exe': '#6B7280', 'msi': '#6B7280', 'deb': '#6B7280', 'rpm': '#6B7280',
+    };
+    return colorMap[extension] || '#6B7280';
   }
 
   function formatFileSize(bytes) {
@@ -303,9 +333,34 @@ export default function YourFiles() {
                     {folder.name}
                   </div>
                   <div className={styles.itemMeta}>
-                    <span className={styles.itemType}>Folder</span>
+                    <span 
+                      className={styles.itemType}
+                      style={{ 
+                        color: '#F59E0B',
+                        backgroundColor: '#F59E0B15',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '8px',
+                        fontSize: '0.7rem',
+                        fontWeight: '600',
+                        textTransform: 'uppercase',
+                        border: '1px solid #F59E0B30'
+                      }}
+                    >
+                      Folder
+                    </span>
                     {viewMode === 'list' && (
-                      <span className={styles.itemDate}>
+                      <span 
+                        className={styles.itemDate}
+                        style={{ 
+                          color: '#8B5CF6',
+                          backgroundColor: '#8B5CF615',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '8px',
+                          fontSize: '0.7rem',
+                          fontWeight: '600',
+                          border: '1px solid #8B5CF630'
+                        }}
+                      >
                         {formatDate(folder.createdAt || Date.now())}
                       </span>
                     )}
@@ -403,11 +458,48 @@ export default function YourFiles() {
                     {file.name}
                   </div>
                   <div className={styles.itemMeta}>
-                    <span className={styles.itemSize}>
+                    <span 
+                      className={styles.itemType}
+                      style={{ 
+                        color: getFileExtensionColor(file.name),
+                        backgroundColor: `${getFileExtensionColor(file.name)}15`,
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '8px',
+                        fontSize: '0.7rem',
+                        fontWeight: '600',
+                        textTransform: 'uppercase',
+                        border: `1px solid ${getFileExtensionColor(file.name)}30`
+                      }}
+                    >
+                      {file.name.split('.').pop()?.toLowerCase() || 'file'}
+                    </span>
+                    <span 
+                      className={styles.itemSize}
+                      style={{ 
+                        color: '#10B981',
+                        backgroundColor: '#10B98115',
+                        padding: '0.2rem 0.5rem',
+                        borderRadius: '8px',
+                        fontSize: '0.7rem',
+                        fontWeight: '600',
+                        border: '1px solid #10B98130'
+                      }}
+                    >
                       {formatFileSize(file.size || 0)}
                     </span>
                     {viewMode === 'list' && (
-                      <span className={styles.itemDate}>
+                      <span 
+                        className={styles.itemDate}
+                        style={{ 
+                          color: '#8B5CF6',
+                          backgroundColor: '#8B5CF615',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '8px',
+                          fontSize: '0.7rem',
+                          fontWeight: '600',
+                          border: '1px solid #8B5CF630'
+                        }}
+                      >
                         {formatDate(file.createdAt || Date.now())}
                       </span>
                     )}
@@ -559,6 +651,7 @@ export default function YourFiles() {
           filename={isRename}
           rename={setRename}
           getDirectoryInfo={getDirectoryInfo}
+          currentDirectoryId=""
           url="localhost"
         />,
         document.getElementById('root')

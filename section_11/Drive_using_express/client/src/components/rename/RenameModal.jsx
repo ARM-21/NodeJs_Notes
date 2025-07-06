@@ -24,7 +24,9 @@ const RenameModal = forwardRef(function (props, ref) {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`http://${props.url}:4000/${props.filename.type}/${props.filename.id}?action=rename`, {
+      // Use correct API endpoint: 'directory' for folders, 'file' for files
+      const apiEndpoint = props.filename.type === 'folder' ? 'directory' : 'file';
+      const response = await fetch(`http://${props.url}:4000/${apiEndpoint}/${props.filename.id}?action=rename`, {
         method: 'PATCH',
         headers: { 
           newname: newName.trim(), 
@@ -51,7 +53,9 @@ const RenameModal = forwardRef(function (props, ref) {
       }));
 
       // Refresh directory content
-      props.getDirectoryInfo();
+      if (props.getDirectoryInfo) {
+        props.getDirectoryInfo(props.currentDirectoryId || '');
+      }
       
       showSuccess("File renamed successfully!");
     } catch (error) {
