@@ -33,9 +33,7 @@ export default function LandingPage() {
         <div className={styles.navContent}>
           <Link to="/" className={styles.logo}>
             <div className={styles.logoIcon}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-              </svg>
+              <span className={styles.bagIcon}>🎒</span>
             </div>
             <span className={styles.logoText}>Jhola</span>
           </Link>
@@ -51,10 +49,10 @@ export default function LandingPage() {
         <div className={styles.heroContent}>
           <div className={styles.heroText}>
             <h1 className={styles.heroTitle}>
-              Your Files, <span className={styles.highlight}>Organized</span> & <span className={styles.highlight}>Secure</span>
+              Your Files, <span className={styles.highlight}>Organized</span> in Your Digital <span className={styles.highlight}>Jhola</span>
             </h1>
             <p className={styles.heroDescription}>
-              Experience the next generation of file management. Store, organize, and access your files from anywhere with our powerful, intuitive platform.
+              Experience the next generation of file management with Jhola - your personal digital bag. Store, organize, and access your files from anywhere with our powerful, intuitive platform.
             </p>
             <div className={styles.heroStats}>
               <div className={styles.stat}>
@@ -99,19 +97,19 @@ export default function LandingPage() {
                 <div className={styles.mockupContent}>
                   <div className={styles.mockupSidebar}>
                     <div className={styles.mockupFolder}>
-                      <div className={styles.folderIcon}>📁</div>
+                      <div className={styles.folderIcon}>🎒</div>
                       <span>Documents</span>
                     </div>
                     <div className={styles.mockupFolder}>
-                      <div className={styles.folderIcon}>📸</div>
+                      <div className={styles.folderIcon}>🎒</div>
                       <span>Images</span>
                     </div>
                     <div className={styles.mockupFolder}>
-                      <div className={styles.folderIcon}>🎵</div>
+                      <div className={styles.folderIcon}>�</div>
                       <span>Music</span>
                     </div>
                     <div className={styles.mockupFolder}>
-                      <div className={styles.folderIcon}>📊</div>
+                      <div className={styles.folderIcon}>🎒</div>
                       <span>Projects</span>
                     </div>
                   </div>
@@ -176,11 +174,11 @@ export default function LandingPage() {
               {
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 ),
                 title: "Smart Organization",
-                description: "Automatically organize your files with intelligent folder structures and tagging system"
+                description: "Pack your files intelligently with our smart jhola system that automatically organizes your digital belongings"
               },
               {
                 icon: (
@@ -259,7 +257,7 @@ export default function LandingPage() {
                 {"⭐".repeat(5)}
               </div>
               <p className={styles.testimonialText}>
-                "Jhola has revolutionized how I manage my files. The smart organization feature saved me hours of manual sorting!"
+                "Jhola has revolutionized how I manage my files. The smart organization feature saved me hours of manual sorting! It's like having a perfectly organized bag for all my digital stuff."
               </p>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorAvatar}>JS</div>
@@ -274,7 +272,7 @@ export default function LandingPage() {
                 {"⭐".repeat(5)}
               </div>
               <p className={styles.testimonialText}>
-                "The security features give me peace of mind. I can share files with clients knowing they're completely safe."
+                "The security features give me peace of mind. I can share files with clients knowing they're completely safe in my digital jhola."
               </p>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorAvatar}>MJ</div>
@@ -289,7 +287,7 @@ export default function LandingPage() {
                 {"⭐".repeat(5)}
               </div>
               <p className={styles.testimonialText}>
-                "Best file management solution I've used. The interface is intuitive and the search function is lightning fast."
+                "Best file management solution I've used. The interface is intuitive and the search function is lightning fast. My digital jhola is always organized!"
               </p>
               <div className={styles.testimonialAuthor}>
                 <div className={styles.authorAvatar}>DW</div>
@@ -307,13 +305,11 @@ export default function LandingPage() {
       <section className={styles.cta}>
         <div className={styles.ctaContent}>
           <div className={styles.ctaIcon}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+            <span className={styles.bagIcon}>🎒</span>
           </div>
-          <h2 className={styles.ctaTitle}>Ready to Transform Your File Management?</h2>
+          <h2 className={styles.ctaTitle}>Ready to Pack Your Files Into Your Digital Jhola?</h2>
           <p className={styles.ctaDescription}>
-            Join thousands of users who have already made the switch to smarter file management. Start your free trial today - no credit card required.
+            Join thousands of users who have already made the switch to smarter file management with Jhola. Start organizing your digital belongings today - no credit card required.
           </p>
           <div className={styles.ctaButtons}>
             <Link to="/register" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnLarge}`}>
@@ -355,14 +351,12 @@ export default function LandingPage() {
           <div className={styles.footerBrand}>
             <Link to="/" className={styles.footerLogo}>
               <div className={styles.logoIcon}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
+                <span className={styles.bagIcon}>🎒</span>
               </div>
               <span className={styles.logoText}>Jhola</span>
             </Link>
             <p className={styles.footerDescription}>
-              The modern file management solution for individuals and teams
+              Your digital bag for modern file management - organize, secure, and access your files from anywhere
             </p>
           </div>
           <div className={styles.footerLinks}>

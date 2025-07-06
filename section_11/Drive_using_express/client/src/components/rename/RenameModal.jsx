@@ -1,7 +1,7 @@
 import React, { useState, forwardRef } from "react";
 import styles from "./RenameModal.module.css";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
+import { handleApiError, handleNetworkError, showSuccess, showWarning } from "../../utils/errorHandler";
 
 const RenameModal = forwardRef(function (props, ref) {
   const [newName, setNewName] = useState(props.filename?.filename || '');
@@ -18,7 +18,7 @@ const RenameModal = forwardRef(function (props, ref) {
 
   async function handleRename() {
     if (!newName.trim()) {
-      toast.error("File name cannot be empty!");
+      showWarning("File name cannot be empty!");
       return;
     }
 
@@ -33,8 +33,12 @@ const RenameModal = forwardRef(function (props, ref) {
         credentials: "include"
       });
 
-      if (response.status === 401) {
-        navigator('/login');
+      const data = await response.json();
+      
+      // Handle API errors using the utility function
+      const hasError = await handleApiError(response, data, navigator);
+      if (hasError) {
+        setIsLoading(false);
         return;
       }
 
@@ -49,15 +53,9 @@ const RenameModal = forwardRef(function (props, ref) {
       // Refresh directory content
       props.getDirectoryInfo();
       
-      const resText = await response.text();
-      if (response.ok) {
-        toast.success("File renamed successfully!");
-      } else {
-        toast.error(resText || "Failed to rename file");
-      }
+      showSuccess("File renamed successfully!");
     } catch (error) {
-      toast.error("An error occurred while renaming the file");
-      console.error('Rename error:', error);
+      handleNetworkError(error);
     } finally {
       setIsLoading(false);
     }

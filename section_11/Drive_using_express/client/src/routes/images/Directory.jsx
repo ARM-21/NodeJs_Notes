@@ -1,433 +1,245 @@
-import React, { useEffect, useState } from 'react';
-import styles from './Directory.module.css';
+import React, { useEffect, useRef, useState } from 'react';
+import styles from './Directory.module.css'; // Importing CSS file
 import { useNavigate, useOutletContext, useParams } from 'react-router';
 import RenameModal from '../../components/rename/RenameModal';
 import DeleteModal from '../../components/delete/DeleteModal';
 import SearchBar from '../../components/SearchBar/searchFile';
 import { createPortal } from 'react-dom';
 import FolderModal from '../../components/NewFolder/FolderModal';
-import { toast } from 'react-toastify';
+import Navbar from '../../components/Navbar/Navbar';
 
 export default function Directory() {
-  const { 
-    files, 
+  const { files, 
     directoryFiles,
-    setDirectoryFiles,
-    setFiles,
-    deleteModal, 
-    setDeleteModal,
-    handleYes, 
-    handleNo,
-    deleteModalRef, 
-    getDirectoryInfo, 
-    setRename, 
-    renameRef, 
-    isRename, 
-    url, 
-    closeFolderModal, 
-    newFolderModalRef, 
-    newFolder, 
-    setNewFolder 
-  } = useOutletContext();
+     setDirectoryFiles,
+     setFiles,
+      deleteModal, 
+      setDeleteModal,
+       handleYes, 
+       handleNo,
+        deleteModalRef, 
+        getDirectoryInfo, setRename, renameRef, isRename, url, closeFolderModal, newFolderModalRef, newFolder, setNewFolder } = useOutletContext()
+    const [load, setLoad] = useState("Loading...");
   
-  const [loadingMessage, setLoadingMessage] = useState("Loading...");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [breadcrumbs, setBreadcrumbs] = useState([]);
-  const navigator = useNavigate();
-  const params = useParams();
-
-  // Build breadcrumb path from current folder
+    const navigator = useNavigate()
+  
+  const params = useParams()
   useEffect(() => {
-    const buildBreadcrumbs = async () => {
-      if (!params.id) {
-        setBreadcrumbs([{ name: 'My Files', id: null }]);
-        return;
-      }
-
-      try {
-        const response = await fetch(`http://${url}:4000/directory/${params.id}/breadcrumbs`, {
-          credentials: 'include'
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setBreadcrumbs(data.breadcrumbs || [{ name: 'My Files', id: null }]);
-        } else {
-          // Fallback: create simple breadcrumb
-          setBreadcrumbs([
-            { name: 'My Files', id: null },
-            { name: 'Current Folder', id: params.id }
-          ]);
-        }
-      } catch (error) {
-        console.error('Error fetching breadcrumbs:', error);
-        // Fallback: create simple breadcrumb
-        setBreadcrumbs([
-          { name: 'My Files', id: null },
-          { name: 'Current Folder', id: params.id }
-        ]);
-      }
-    };
-
-    buildBreadcrumbs();
-  }, [params.id, url]);
-
-  // Only handle modal effects, don't make API calls since Home.jsx handles this
-  useEffect(() => {
-    if (deleteModal?.showModal && deleteModalRef?.current) {
+    getDirectoryInfo(params.name)
+    // getData(params)
+    if (!directoryFiles.files) {
+      setLoad('No Files Available')
+    }
+  }, []);
+  //useEffectes for handling side effects
+ useEffect(() => {
+    if (deleteModal.showModal && deleteModalRef?.current) {
       deleteModalRef.current.showModal();
     }
-  }, [deleteModal?.showModal]);
+  }, [deleteModal.showModal]);
 
   useEffect(() => {
-    if (isRename?.showModal && renameRef?.current) {
-      renameRef.current.showModal();
+    if (deleteModal.deleteFile) {
+      console.log('deleting file', deleteModal.filename)
+      handleDelete(deleteModal,deleteModal.type)
     }
-  }, [isRename?.showModal]);
+    setDeleteModal((prev) => { return { ...prev, showModal: false, deleteFile: false,type:'' } })
+  }, [deleteModal.deleteFile])
 
-  async function handleDelete(list, type) {
-    try {
-      const response = await fetch(`http://${url}:4000/${type}/${list._id}?action=delete`, {
-        method: 'DELETE',
-        headers: { dirid: list.parentId },
-        credentials: 'include'
-      });
-      
-      if (response.status === 401) {
-        navigator('/login');
-        return;
-      }
-      
-      if (response.ok) {
-        toast.success(`${type === 'file' ? 'File' : 'Folder'} deleted successfully`);
-        getDirectoryInfo(params.id);
-      } else {
-        toast.error('Failed to delete item');
-      }
-    } catch (error) {
-      toast.error('An error occurred while deleting');
-      console.error('Delete error:', error);
+  useEffect(() => {
+    if (renameRef.current && isRename.showModal) {
+      renameRef.current.showModal()
     }
+  }, [isRename.showModal, renameRef])
+
+  //alternative way to create delete 
+  async function handleDelete(list,type) {
+    console.log("filename", list)
+    const response = await fetch(`http://${url}:4000/${type}/${list.filename}?action=delete`, {
+      method: 'DELETE',
+      headers: { dirid: list.parentId },
+      credentials:'include'
+    })
+    console.log("homejsx",response.status)  
+    if(response.status == 401){
+      navigator('/login')
+      return
+    }
+    getDirectoryInfo(params.name)
+    // getData(params)
+
   }
-
+  // Search functionality
   function handleSearch(e) {
     const inputValue = e.target.value.toLowerCase();
     if (inputValue.length > 0) {
-      const originalFiles = files;
-      const originalDirectories = directoryFiles;
-      
-      const filteredFiles = originalFiles.filter((file) =>
+      const filteredFiles = files.filter((file) =>
         file.name.toLowerCase().includes(inputValue)
       );
-      const filteredDirectories = originalDirectories.filter((dir) =>
-        dir.name.toLowerCase().includes(inputValue)
-      );
+      const directory = directoryFiles.filter((dir)=>{
+        return dir.name.toLowerCase().includes(inputValue)
+      })
 
-      if (filteredFiles.length === 0 && filteredDirectories.length === 0) {
-        setLoadingMessage("No matching items found");
-      } else {
-        setLoadingMessage("Loading...");
+      if (filteredFiles.length === 0) {
+        setLoad("File Not Found");
       }
-      
       setFiles(filteredFiles);
-      setDirectoryFiles(filteredDirectories);
+      setDirectoryFiles(directory)
+      
     } else {
-      // Reset search - reload data
-      setLoadingMessage("Loading...");
-      getDirectoryInfo(params.id);
+      getDirectoryInfo(params.name);
     }
   }
 
   return (
-    <div className={styles.container}>
-      {/* Modals */}
-      {deleteModal?.showModal &&
+    <>
+
+    
+      {/* Modals remain same */}
+      {deleteModal.showModal &&
         createPortal(
           <DeleteModal
-            onCancel={handleNo}
-            onConfirm={handleYes}
+            handleNo={handleNo}
+            handleYes={handleYes}
             ref={deleteModalRef}
-            filename={deleteModal?.filename}
-            type={deleteModal?.type}
+            getDirectoryInfo={getDirectoryInfo}
           />,
           document.getElementById("root")
         )}
-      {isRename?.showModal &&
+      {isRename.showModal &&
         createPortal(
           <RenameModal
             rename={setRename}
             ref={renameRef}
             filename={isRename}
-            getDirectoryInfo={() => getDirectoryInfo(params.id)}
+            getDirectoryInfo={getDirectoryInfo}
             url={url}
           />,
           document.getElementById("root")
         )}
-      {newFolder?.showModal && 
-        createPortal(
-          <FolderModal
-            ref={newFolderModalRef}
-            onClose={closeFolderModal}
-            getDirectoryInfo={() => getDirectoryInfo(params.id)}
-          />,
-          document.getElementById("root")
-        )}
 
-      {/* Search Section */}
-      <div className={styles.searchSection}>
+     
+
+  
+
+      <div className={styles.directoryContainer}>
         <SearchBar handleSearch={handleSearch} />
-      </div>
+        {newFolder.showModal && 
+        createPortal(
+        <FolderModal
+          ref={newFolderModalRef}
+          setNewFolderModal={setNewFolder}
+          onClose={closeFolderModal}
+        />
+      ,document.getElementById("root"))}
 
-      {/* Breadcrumb Navigation */}
-      <div className={styles.breadcrumbSection}>
-        <div className={styles.navigationControls}>
-          <button
-            className={styles.backButton}
-            onClick={() => {
-              if (breadcrumbs.length > 1) {
-                const parentCrumb = breadcrumbs[breadcrumbs.length - 2];
-                if (parentCrumb.id) {
-                  navigator(`/drive/directory/${parentCrumb.id}`);
-                } else {
-                  navigator('/drive');
-                }
-              } else {
-                navigator('/drive');
-              }
-            }}
-          >
-            <svg className={styles.backIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            Back
-          </button>
-          <nav className={styles.breadcrumbNav}>
-            <svg className={styles.breadcrumbIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-            <ol className={styles.breadcrumbList}>
-              {breadcrumbs.map((crumb, index) => (
-                <li key={crumb.id || 'root'} className={styles.breadcrumbItem}>
-                  {index < breadcrumbs.length - 1 ? (
-                    <>
-                      <button
-                        className={styles.breadcrumbLink}
-                        onClick={() => {
-                          if (crumb.id) {
-                            navigator(`/drive/directory/${crumb.id}`);
-                          } else {
-                            navigator('/drive');
-                          }
-                        }}
-                      >
-                        {crumb.name}
-                      </button>
-                      <svg className={styles.breadcrumbSeparator} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </>
-                  ) : (
-                    <span className={styles.breadcrumbCurrent}>{crumb.name}</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </nav>
-        </div>
-      </div>
-
-      {/* Content Section */}
-      <div className={styles.contentSection}>
         {/* Files Section */}
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <svg className={styles.sectionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            <h2 className={styles.sectionTitle}>Files</h2>
-          </div>
-          {files?.length > 0 ? (
-            <ul className={styles.itemList}>
-              {files.map(({ _id: id, name, extension, parentId }) => (
-                <li key={id} className={styles.itemCard}>
-                  <div className={styles.itemInfo}>
-                    <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    <p className={styles.itemName}>
-                      {name.includes(".") ? name : name + extension}
-                    </p>
-                  </div>
-                  <div className={styles.itemActions}>
-                    <button 
-                      className={`${styles.actionButton} ${styles.previewButton}`}
-                      onClick={() => {
-                        setIsProcessing(true);
-                        // Use a direct link that opens in the same tab
-                        window.location.href = `http://${url}:4000/file/${id}?action=open`;
-                      }}
-                      disabled={isProcessing}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                      {isProcessing ? 'Opening...' : 'Preview'}
-                    </button>
-                    <button 
-                      className={`${styles.actionButton} ${styles.downloadButton}`}
-                      onClick={() => {
-                        setIsProcessing(true);
-                        // Download should create a link and click it
-                        const link = document.createElement('a');
-                        link.href = `http://${url}:4000/file/${id}?action=download`;
-                        link.download = name;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        setTimeout(() => setIsProcessing(false), 1000);
-                      }}
-                      disabled={isProcessing}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7,10 12,15 17,10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                      </svg>
-                      {isProcessing ? 'Downloading...' : 'Download'}
-                    </button>
-                    <button 
-                      className={`${styles.actionButton} ${styles.renameButton}`}
-                      onClick={() =>
-                        setRename(prev => ({ 
-                          ...prev,
-                          filename: name,
-                          id: id,
-                          showModal: true,
-                          type: "file"
-                        }))
-                      }
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                      Rename
-                    </button>
-                    <button 
-                      className={`${styles.actionButton} ${styles.deleteButton}`}
-                      onClick={() =>
-                        setDeleteModal((prev) => ({
-                          ...prev,
-                          showModal: true,
-                          filename: name, // Pass the actual name for display
-                          id: id, // Pass the id for deletion
-                          type: 'file',
-                          parentId,
-                        }))
-                      }
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3,6 5,6 21,6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        <line x1="10" y1="11" x2="10" y2="17"/>
-                        <line x1="14" y1="11" x2="14" y2="17"/>
-                      </svg>
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className={styles.emptyState}>
-              <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              <h3 className={styles.emptyTitle}>No Files</h3>
-              <p className={styles.emptyDescription}>{loadingMessage}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Folders Section */}
-        <div className={styles.section}>
-          <div className={styles.sectionHeader}>
-            <svg className={styles.sectionIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-            <h2 className={styles.sectionTitle}>Folders</h2>
-          </div>
-          {directoryFiles?.length > 0 ? (
-            <ul className={styles.itemList}>
-              {directoryFiles.map(({ _id: id, name, parentId }) => (
-                <li key={id} className={styles.itemCard}>
-                  <div className={styles.itemInfo}>
-                    <svg className={styles.itemIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                    </svg>
-                    <p className={styles.itemName}>{name}</p>
-                  </div>
-                  <div className={styles.itemActions}>
-                    <button 
-                      className={`${styles.actionButton} ${styles.openButton}`}
-                      onClick={() => navigator(`/drive/directory/${id}`)}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/>
-                      </svg>
-                      Open
-                    </button>
-                    <button 
-                      className={`${styles.actionButton} ${styles.renameButton}`}
-                      onClick={() => setRename((prev) => ({
-                        ...prev,
+        <section className={styles.fileFolderMergeSection}>
+        <section className={styles.filesSection}>
+          <h2>Your Files</h2>
+          <ul className={styles.fileList}>
+            {files?.length > 0 ? (
+              files.map(({ id, name, extension, parentId }) => (
+                <li key={id} className={styles.fileItem}>
+                <p className={styles.fileName}>
+                  {name.includes(".") ?name : name + extension}
+                </p>
+                <div className={styles.fileActions}>
+                  <a href={`http://${url}:4000/file/${id}?action=open`} className={styles.fileBtn}>
+                    <button >Preview</button>
+                  </a>
+                  <a href={`http://${url}:4000/file/${id}?action=download`} className={styles.fileBtn}>
+                    <button className={styles.downloadBtn}>Download</button>
+                  </a>
+                  <section className={styles.fileBtn}>
+                  <button className={styles.deleteBtn}
+                    onClick={() =>
+                      setDeleteModal((prev)=>{
+                        return {...prev,
+                        showModal: true,
+                        filename: id,
+                        type:'file',
+                        parentId,
+                      }})
+                      
+                    }
+                  >
+                    Delete
+                  </button>
+                  </section>
+                  <span className={styles.fileBtn}>
+                  <button className={styles.renameBtn}
+                    onClick={() =>
+                      setRename(prev=>  { return {...prev,
                         filename: name,
                         id: id,
                         showModal: true,
-                        type: "directory"
-                      }))}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                      Rename
-                    </button>
-                    <button 
-                      className={`${styles.actionButton} ${styles.deleteButton}`}
-                      onClick={() => setDeleteModal((prev) => ({
-                        ...prev, 
-                        showModal: true, 
-                        filename: name, // Pass the actual name for display
-                        id: id, // Pass the id for deletion
-                        parentId,
-                        type: 'directory' 
-                      }))}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <polyline points="3,6 5,6 21,6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                        <line x1="10" y1="11" x2="10" y2="17"/>
-                        <line x1="14" y1="11" x2="14" y2="17"/>
-                      </svg>
-                      Delete
-                    </button>
+                        type:"file"
+                      }})
+                    }
+                  >
+                    Rename
+                  </button>
+                  </span>
+                </div>
+              </li>
+              ))
+            ) : (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>🎒</div>
+                <p className={styles.loadingText}>{load}</p>
+                <p className={styles.emptyMessage}>Start filling your digital jhola with files!</p>
+              </div>
+            )}
+          </ul>
+        </section>
+
+        {/* Folders Section */}
+        <section className={styles.foldersSection}>
+          <h2>Your Folders</h2>
+          <ul className={styles.folderList}>
+            {directoryFiles?.length > 0 ? (
+              directoryFiles.map(({ id, name, parentId }) => (
+                <li key={id} className={styles.folderItem}>
+                  <p className={styles.folderName}>{name}</p>
+                  <div className={styles.folderActions}>
+                    <a href={`/directory/${id}`} className={styles.folderBtn}>
+                      <button className={`${styles.actionBtn} ${styles.openBtn}`}>Open</button>
+                    </a>
+                    <span className={styles.folderBtn}>
+                      <button
+                        onClick={() => setRename((prev) => {return {...prev,filename: name,
+                        id: id,
+                        showModal: true,
+                        type:"directory"}})}
+                        className={`${styles.actionBtn} ${styles.renameBtn}`}
+                      >
+                        Rename
+                      </button>
+                    </span>
+                    <span className={styles.folderBtn}>
+                      <button
+                        onClick={() => setDeleteModal((prev) => {return { ...prev, showModal: true, filename: name, parentId,type:'directory' }})}
+                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                      >
+                        Delete
+                      </button>
+                    </span>
                   </div>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <div className={styles.emptyState}>
-              <svg className={styles.emptyIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-              </svg>
-              <h3 className={styles.emptyTitle}>No Folders</h3>
-              <p className={styles.emptyDescription}>No folders available</p>
-            </div>
-          )}
-        </div>
+              ))
+            ) : (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>🎒</div>
+                <p className={styles.loadingText}>No folders available</p>
+                <p className={styles.emptyMessage}>Create your first folder to organize your jhola!</p>
+              </div>
+            )}
+          </ul>
+        </section>
+        </section>
       </div>
-    </div>
+    </>
   );
+
 }

@@ -66,9 +66,15 @@ export default function Register() {
   return (
     <div className={styles.container}>
       <div className={styles.formContainer}>
+        <div className={styles.logoSection}>
+          <div className={styles.logoIcon}>🎒</div>
+          <h2 className={styles.logoText}>Jhola</h2>
+          <p className={styles.logoSubtext}>Your Personal Cloud Storage</p>
+        </div>
+        
         <div className={styles.header}>
           <h1 className={styles.title}>Create Account</h1>
-          <p className={styles.subtitle}>Join us and start managing your files</p>
+          <p className={styles.subtitle}>Start organizing your files in your digital jhola</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>

@@ -1,0 +1,103 @@
+/* Custom toast styles */
+.toast-error-unauthorized {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  border-left: 4px solid #ff4757;
+}
+
+.toast-error-forbidden {
+  background: linear-gradient(135deg, #ff6348 0%, #ff4757 100%);
+  color: white;
+  border-left: 4px solid #ff3838;
+}
+
+.toast-error-invalid {
+  background: linear-gradient(135deg, #ffa726 0%, #ff9800 100%);
+  color: white;
+  border-left: 4px solid #f57c00;
+}
+
+.toast-error-notfound {
+  background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+  color: white;
+  border-left: 4px solid #1976d2;
+}
+
+.toast-error-server {
+  background: linear-gradient(135deg, #8e24aa 0%, #7b1fa2 100%);
+  color: white;
+  border-left: 4px solid #6a1b9a;
+}
+
+.toast-error-network {
+  background: linear-gradient(135deg, #ef5350 0%, #f44336 100%);
+  color: white;
+  border-left: 4px solid #d32f2f;
+}
+
+.toast-error-general {
+  background: linear-gradient(135deg, #ff7043 0%, #ff5722 100%);
+  color: white;
+  border-left: 4px solid #e64a19;
+}
+
+.toast-error-auth {
+  background: linear-gradient(135deg, #e53935 0%, #d32f2f 100%);
+  color: white;
+  border-left: 4px solid #c62828;
+}
+
+.toast-warning {
+  background: linear-gradient(135deg, #ffca28 0%, #ffc107 100%);
+  color: #333;
+  border-left: 4px solid #ff8f00;
+}
+
+.toast-success {
+  background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+  color: white;
+  border-left: 4px solid #388e3c;
+}
+
+/* Toast container customization */
+.Toastify__toast-container {
+  z-index: 10000;
+}
+
+.Toastify__toast {
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
+}
+
+.Toastify__toast--error {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+}
+
+.Toastify__toast--success {
+  background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+}
+
+.Toastify__toast--warning {
+  background: linear-gradient(135deg, #ffca28 0%, #ffc107 100%);
+}
+
+.Toastify__toast--info {
+  background: linear-gradient(135deg, #42a5f5 0%, #2196f3 100%);
+}
+
+.Toastify__progress-bar {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+  .Toastify__toast-container {
+    background: transparent;
+  }
+  
+  .toast-warning {
+    background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+    color: #000;
+  }
+}

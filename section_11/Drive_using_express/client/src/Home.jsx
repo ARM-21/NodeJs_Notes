@@ -5,6 +5,7 @@ import Navbar from './components/Navbar/Navbar.jsx';
 import { createPortal } from 'react-dom';
 import FolderModal from './components/NewFolder/FolderModal.jsx';
 import styles from './Home.module.css';
+import { handleApiError, handleNetworkError, showSuccess } from './utils/errorHandler.js';
 
 const url = 'localhost';
 
@@ -29,10 +30,12 @@ export default function Home() {
       const response = await fetch(`http://${url}:4000/directory/${params}`, {
         credentials: 'include'
       });
+      
       const data = await response.json();
       
-      if (response.status === 401) {
-        navigator("/login");
+      // Handle API errors using the utility function
+      const hasError = await handleApiError(response, data, navigator);
+      if (hasError) {
         return;
       }
       
@@ -46,20 +49,52 @@ export default function Home() {
         setCurrentFolder({ name: 'My Files', id: null });
       }
     } catch (error) {
-      console.error('Error fetching directory info:', error);
+      handleNetworkError(error);
     } finally {
       setIsLoading(false);
     }
   }
 
   function handleNo() {
-    setDeleteModal((prev) => ({ ...prev, showModal: false, deleteFile: false, filename: '', parentId: '', type: '' }));
+    setDeleteModal((prev) => ({ ...prev, showModal: false, deleteFile: false, filename: '', _id: '', type: '', parentId: '' }));
     deleteModalRef.current?.close();
   }
 
-  function handleYes() {
-    setDeleteModal((prev) => ({ ...prev, showModal: false, deleteFile: true }));
-    console.log("deleteFile");
+  async function handleYes() {
+    if (deleteModal._id && deleteModal.type) {
+      try {
+        // Use the correct API endpoint based on type
+        const apiEndpoint = deleteModal.type === 'folder' ? 'directory' : 'file';
+        
+        const response = await fetch(`http://localhost:4000/${apiEndpoint}/${deleteModal._id}?action=delete`, {
+          method: 'DELETE',
+          headers: { 
+            'dirid': deleteModal.parentId || paths.id || ''
+          },
+          credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        // Handle API errors using the utility function
+        const hasError = await handleApiError(response, data, navigator);
+        if (hasError) {
+          return;
+        }
+        
+        // Show success toast
+        showSuccess(`${deleteModal.type === 'file' ? 'File' : 'Folder'} deleted successfully!`);
+        
+        // Refresh the directory info
+        getDirectoryInfo(paths.id || '');
+        
+      } catch (error) {
+        handleNetworkError(error);
+      }
+    }
+    
+    setDeleteModal((prev) => ({ ...prev, showModal: false, deleteFile: false, filename: '', _id: '', type: '', parentId: '' }));
+    deleteModalRef.current?.close();
   }
 
   const closeFolderModal = () => {
@@ -95,7 +130,21 @@ export default function Home() {
             onClick={openFolderModal}
             className={styles.newFolderButton}
           >
-            📁 New Folder
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+              <line x1="12" y1="11" x2="12" y2="17"/>
+              <line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+            New Folder
           </button>
         </div>
         
@@ -136,6 +185,7 @@ export default function Home() {
           ref={newFolderModalRef}
           onClose={closeFolderModal}
           getDirectoryInfo={getDirectoryInfo}
+          currentFolder={currentFolder}
         />,
         document.getElementById('root')
       )}

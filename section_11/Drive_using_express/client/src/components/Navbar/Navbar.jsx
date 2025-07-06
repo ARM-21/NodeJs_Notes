@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
 import styles from './Navbar.module.css';
+// select list by default in mobile view for your files
+// Create Search Context
+export const SearchContext = createContext();
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const [userProfile, setUserProfile] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const navigator = useNavigate();
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getUser();
@@ -27,14 +26,11 @@ const Navbar = () => {
 
       if (res.status === 200) {
         setUserProfile(data);
-      } else {
-        navigator('/login');
+      } else if (res.status === 401) {
+        navigate('/login');
       }
     } catch (error) {
-      console.error('Error fetching user:', error);
-      navigator('/login');
-    } finally {
-      setIsLoading(false);
+      console.error('Failed to fetch user:', error);
     }
   }
 
@@ -44,27 +40,37 @@ const Navbar = () => {
         credentials: 'include',
         method: 'POST'
       });
-
+      
       const data = await resLog.json();
-
+      
       if (resLog.status === 200) {
-        toast.success('Logging out...', { autoClose: 1000 });
+        toast.success("Logging out...", { autoClose: 1000 });
         setTimeout(() => {
-          navigator('/');
-        }, 1000);
+          navigate('/login');
+        }, 2000);
       }
     } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Error logging out');
+      console.error('Logout failed:', error);
+      toast.error("Logout failed. Please try again.");
     }
   }
 
-  if (isLoading) {
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    // Handle search functionality
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+  };
+
+  if (!userProfile?.username) {
     return (
       <nav className={styles.navbar}>
         <div className={styles.container}>
-          <div className={styles.loading}>
-            <div className={styles.spinner}></div>
+          <div className={styles.logo}>
+            <div className={styles.logoIcon}>🎒</div>
+            <span className={styles.logoText}>Jhola</span>
           </div>
         </div>
       </nav>
@@ -72,97 +78,99 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.container}>
-        <div className={styles.logo}>
-          <div className={styles.logoIcon}>📁</div>
-          <span className={styles.logoText}>FileSpace</span>
-        </div>
-
-        <div className={styles.searchContainer}>
-          <div className={styles.searchBox}>
-            <input
-              type="text"
-              placeholder="Search files and folders..."
-              className={styles.searchInput}
-            />
-            <button className={styles.searchButton}>
-              🔍
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.userSection}>
-          <div className={styles.userInfo}>
-            <div className={styles.userAvatar}>
-              {userProfile.username?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className={styles.userDetails}>
-              <span className={styles.userName}>{userProfile.username}</span>
-              <span className={styles.userEmail}>{userProfile.email}</span>
-            </div>
+    <SearchContext.Provider value={{ searchTerm, setSearchTerm, clearSearch }}>
+      <nav className={styles.navbar}>
+        <div className={styles.container}>
+          <div className={styles.logo}>
+            <div className={styles.logoIcon}>🎒</div>
+            <span className={styles.logoText}>Jhola</span>
           </div>
 
-          <div className={styles.userActions}>
-            <button className={styles.actionButton} title="Settings">
-              ⚙️
-            </button>
-            <button 
-              className={styles.actionButton} 
-              onClick={handleLogout}
-              title="Logout"
-            >
-              🚪
-            </button>
-          </div>
-        </div>
-
-        <button 
-          className={styles.mobileMenuButton}
-          onClick={toggleMobileMenu}
-        >
-          {isMobileMenuOpen ? '✕' : '☰'}
-        </button>
-
-        {isMobileMenuOpen && (
-          <div className={styles.mobileMenu}>
-            <div className={styles.mobileUserInfo}>
-              <div className={styles.userAvatar}>
-                {userProfile.username?.charAt(0).toUpperCase() || 'U'}
+          <div className={styles.searchContainer}>
+            <form onSubmit={handleSearchSubmit} className={styles.searchForm}>
+              <div className={styles.searchBox}>
+                <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search files and folders..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+                {searchTerm && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className={styles.clearButton}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                )}
               </div>
-              <div className={styles.userDetails}>
-                <span className={styles.userName}>{userProfile.username}</span>
-                <span className={styles.userEmail}>{userProfile.email}</span>
-              </div>
-            </div>
-            <div className={styles.mobileActions}>
-              <button className={styles.mobileActionButton}>
-                ⚙️ Settings
-              </button>
+            </form>
+          </div>
+
+          <div className={styles.userSection}>
+            <div className={styles.userProfile}>
               <button 
-                className={styles.mobileActionButton}
-                onClick={handleLogout}
+                className={styles.userButton}
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
               >
-                🚪 Logout
+                <div className={styles.userAvatar}>
+                  {userProfile.username?.charAt(0).toUpperCase()}
+                </div>
+                <span className={styles.userName}>{userProfile.username}</span>
+                <svg className={styles.dropdownIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="6,9 12,15 18,9" />
+                </svg>
               </button>
+
+              {showUserDropdown && (
+                <div className={styles.userDropdown}>
+                  <div className={styles.dropdownItem}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <div className={styles.userInfo}>
+                      <span className={styles.userDisplayName}>{userProfile.username}</span>
+                      <span className={styles.userEmail}>{userProfile.email || 'user@example.com'}</span>
+                    </div>
+                  </div>
+                  <div className={`${styles.dropdownItem} ${styles.disabledItem}`}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
+                    </svg>
+                    <span>Settings</span>
+                    <span className={styles.comingSoon}>(Coming Soon)</span>
+                  </div>
+                  <div className={styles.dropdownDivider}></div>
+                  <button 
+                    className={`${styles.dropdownItem} ${styles.logoutButton}`}
+                    onClick={handleLogout}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                      <polyline points="16,17 21,12 16,7" />
+                      <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
-
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
-    </nav>
+        </div>
+      </nav>
+      <ToastContainer autoClose={2000} />
+    </SearchContext.Provider>
   );
 };
 

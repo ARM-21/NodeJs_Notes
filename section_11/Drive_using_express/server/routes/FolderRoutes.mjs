@@ -4,6 +4,7 @@ import path from "node:path";
 import { rm, stat } from "node:fs/promises";
 import validateId from "../middlewares/validateId.js";
 import { Db, ObjectId } from "mongodb";
+import crypto from "node:crypto";
 const router = express.Router();
 
 router.param('id', validateId)
@@ -74,20 +75,21 @@ router.post('/:parentId?', async (req, res) => {
     const directoryName = req.headers.dirname;
     /**optional if user want to upload in root folder*/
     const parentDirId = req.params.parentId || req.user.rootDirId;
-    const folderId = crypto.randomUUID();
+
 
     try {
+        // If parentId is provided, validate it exists
         if (req.params.parentId) {
             const associatedFolder = await folderCollection.findOne({ _id: new ObjectId(String(parentDirId)) })
 
             if (!associatedFolder) {
-                res.status(404).json({ message: "Folder doesn't exists" })
+                res.status(404).json({ message: "Parent folder doesn't exist" })
                 return
             }
         }
-        else {
-            return res.status(404).json({ message: "Folder doesn't exists" })
-        }
+        // If no parentId, we're creating in root folder (use rootDirId)
+        // This is allowed, so we proceed with the folder creation
+        
         const newFolder = await folderCollection.insertOne({
             name: directoryName,
             parentId: parentDirId,
@@ -107,8 +109,9 @@ router.post('/:parentId?', async (req, res) => {
 router.delete('/:folderId?', async (req, res, next) => {
     // try {
     //folder id
-    const folderId = req.params.folderId;
     //parent directory id
+    //parent directory id
+    const folderId = req.params.folderId;
     const parentIdUser = req.headers.dirid || req.user.rootDirId;
     //database collection
     const fileCollection = req.db.collection('files')

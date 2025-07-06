@@ -7,6 +7,9 @@ import Login from "./routes/login/Login.jsx"
 import LandingPage from "./routes/InitialPage/LandingPage.jsx";
 import './app.css'
 import Register from "./routes/register/Register.jsx";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './styles/toast.css';
 
 const routes = createBrowserRouter([
   {
@@ -39,7 +42,23 @@ const routes = createBrowserRouter([
 ])
 function App() {
 
-  return <RouterProvider router={routes} />
+  return (
+    <>
+      <RouterProvider router={routes} />
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
+  )
 }
 
 export default App;

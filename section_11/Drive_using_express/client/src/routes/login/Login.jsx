@@ -60,9 +60,15 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <div className={styles.formContainer}>
+        <div className={styles.logoSection}>
+          <div className={styles.logoIcon}>🎒</div>
+          <h2 className={styles.logoText}>Jhola</h2>
+          <p className={styles.logoSubtext}>Your Personal Cloud Storage</p>
+        </div>
+        
         <div className={styles.header}>
           <h1 className={styles.title}>Welcome Back</h1>
-          <p className={styles.subtitle}>Sign in to your account</p>
+          <p className={styles.subtitle}>Sign in to access your digital jhola</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>

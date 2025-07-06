@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import Modal from '../uploadConfirm/Modal';
 import UploadConfirm from '../uploadConfirm/UploadConfirm';
 import styles from './AddFile.module.css';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import FolderModal from '../NewFolder/FolderModal';
-import { toast } from 'react-toastify';
+import { handleApiError, handleNetworkError, showSuccess, showWarning } from '../../utils/errorHandler';
 
 
 export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
@@ -19,12 +19,15 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
   //storing files related information to track file
   const [fileDetails, setFileDetails] = useState({ file: '', size: '', showModal: false, eventObject: null });
   //state for new folder modal
+  const [folderModal, setFolderModal] = useState(false);
   //references for upload and delete modal
   const refModal = useRef(null)
   const uploadModalRef = useRef(null)
   //ref for newfolder modal
+  const newFolderRef = useRef(null);
 
   const directoryName = useParams();
+  const navigate = useNavigate();
   //handling when user adds or change the files
 
   async function handleAdd(e) {
@@ -36,7 +39,7 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', `http://localhost:4000/file/${file.name}?action=add`, true);
       xhr.withCredentials = true;
-      xhr.setRequestHeader('dirid', directoryName.name || '');
+      xhr.setRequestHeader('dirid', directoryName.id || '');
 
       xhr.upload.addEventListener('progress', (prog) => {
         const progValue = (prog.loaded / prog.total) * 100;
@@ -47,24 +50,33 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
         setProgress(progValue);
       });
 
-      xhr.addEventListener('load', () => {
+      xhr.addEventListener('load', async () => {
         if (xhr.status === 200) {
           setUploadText('File Uploaded Successfully');
-          toast.success('File uploaded successfully!');
+          showSuccess('File uploaded successfully!');
         } else {
           setUploadText('Upload Failed');
-          toast.error('Upload failed. Please try again.');
+          // Handle error response
+          try {
+            const response = new Response(xhr.responseText);
+            const data = JSON.parse(xhr.responseText);
+            await handleApiError(response, data, navigate);
+          } catch (e) {
+            // Fallback for generic upload error
+            await handleApiError({ status: xhr.status, ok: false }, 
+              { message: 'Upload failed. Please try again.' }, navigate);
+          }
         }
         
         setTimeout(() => {
           setShowModal(false);
-          getDirectoryInfo(directoryName.name);
+          getDirectoryInfo(directoryName.id);
         }, 1000);
       });
 
       xhr.addEventListener('error', () => {
         setUploadText('Upload Failed');
-        toast.error('Upload failed. Please try again.');
+        handleNetworkError(new Error('Upload failed'));
         setTimeout(() => {
           setShowModal(false);
         }, 1000);
@@ -73,8 +85,7 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
       xhr.send(file);
       setShowModal(true);
     } catch (error) {
-      toast.error('An error occurred during upload');
-      console.error('Upload error:', error);
+      handleNetworkError(error);
     }
   }
 
@@ -124,7 +135,7 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
     // Check file size (limit to 100MB)
     const maxSize = 100 * 1024 * 1024; // 100MB in bytes
     if (file.size > maxSize) {
-      toast.error('File size too large. Maximum size is 100MB.');
+      showWarning('File size too large. Maximum size is 100MB.');
       return;
     }
     
@@ -137,9 +148,26 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
     }));
   }
 
+  // Handle new folder modal
+  function handleNewFolder() {
+    setFolderModal(true);
+  }
+
+  function closeFolderModal() {
+    setFolderModal(false);
+  }
+
 
   return (
     <>
+      {folderModal && (
+        <FolderModal 
+          isOpen={folderModal} 
+          onClose={closeFolderModal} 
+          getDirectoryInfo={getDirectoryInfo} 
+          ref={newFolderRef}
+        />
+      )}
       {fileDetails.showModal
         ? createPortal(
           <UploadConfirm
@@ -165,13 +193,15 @@ export default function AddFile({ getDirectoryInfo, getDirectoryData }) {
                 </div>
                 <h2 className={styles.title}>Upload Files</h2>
                 <p className={styles.description}>
-                  Select files to upload to your drive
+                  Add files to your digital jhola
                 </p>
                 <div className={styles.uploadArea}>
-                  <label htmlFor='userFile' className={styles.fileLabel}>
-                    <span className={styles.labelText}>Choose Files</span>
-                    <span className={styles.labelSubtext}>or drag and drop</span>
-                  </label>
+                  <div className={styles.actionButtons}>
+                    <label htmlFor='userFile' className={styles.fileLabel}>
+                      <span className={styles.labelText}>Choose Files</span>
+                      {/* <span className={styles.labelSubtext}>or drag and drop</span> */}
+                    </label>
+                  </div>
                   <input 
                     type='file' 
                     name='userFile' 
