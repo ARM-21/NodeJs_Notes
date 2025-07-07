@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
         }
         if(user.password === userData.password) {
             const userId = user._id.toString()
-            res.cookie('uid', userId, { sameSite: 'none', secure: true })
+            res.cookie('uid', userId, { sameSite: 'lax', secure: false ,httpOnly:true})
             res.status(200).json({ message: "User Login Successfull", userId: userId, userDir: user.rootDirId })
             return;
         }

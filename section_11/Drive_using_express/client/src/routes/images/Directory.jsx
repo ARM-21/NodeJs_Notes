@@ -25,7 +25,7 @@ export default function Directory() {
     newFolderModalRef, 
     newFolder, 
     setNewFolder,
-    currentFolder = { name: 'Directory', sid: null },
+    currentFolder = { name: 'Directory', id: null },
     setCurrentFolder,
     getDirectoryInfo
   } = useOutletContext();

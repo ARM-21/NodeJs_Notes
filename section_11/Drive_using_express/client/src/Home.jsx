@@ -7,14 +7,7 @@ import FolderModal from './components/NewFolder/FolderModal.jsx';
 import styles from './Home.module.css';
 import { handleApiError, handleNetworkError, showSuccess } from './utils/errorHandler.js';
 
-// Dynamic URL detection - you can change this based on your network setup
-const getServerUrl = () => {
-  // For development, you can manually set your server IP here
-  // Replace 'localhost' with your actual server IP if accessing from other devices
-  return '192.168.100.7'; // Change this to your server IP for network access
-};
-
-const url = getServerUrl();
+const url = 'localhost';
 
 export default function Home() {
   const paths = useParams();
@@ -82,7 +75,7 @@ export default function Home() {
         // Use the correct API endpoint based on type: 'directory' for folders, 'file' for files
         const apiEndpoint = deleteModal.type === 'folder' ? 'directory' : 'file';
         
-        const response = await fetch(`http://${url}:4000/${apiEndpoint}/${deleteModal._id}?action=delete`, {
+        const response = await fetch(`http://localhost:4000/${apiEndpoint}/${deleteModal._id}?action=delete`, {
           method: 'DELETE',
           headers: { 
             'dirid': deleteModal.parentId || paths.id || ''
