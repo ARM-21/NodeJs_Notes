@@ -1,10 +1,9 @@
 import express from "express";
-import userDetails from "../UserDB.json" with { type: "json" };
-import directoryDetails from "./../FolderDB.json" with {type: "json"};
 import auth from "./../middlewares/auth.js"
 import crypto from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import validateId from "../middlewares/validateId.js";
+import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
@@ -26,19 +25,17 @@ router.post("/register", async (req, res) => {
         }
         //folder creation
         const userFolder = req.db.collection("folders");
+        const userId = new ObjectId()
+        const folderId = new ObjectId()
 
+        const rootDirId = folderId.toString()
+        const folderUserID = userId.toString()
         // userId
         //rootDirId:dirId
-        let isUserCreated = await userCollection.insertOne({ username, email, password })
-        let isFolderCreated = await userFolder.insertOne({ name: `root-${email}`, parentId: null })
+        let isUserCreated = await userCollection.insertOne({ _id:userId,username, email, password, rootDirId })
+        let isFolderCreated = await userFolder.insertOne({ _id:folderId,name: `root-${email}`, parentId: null, userId:folderUserID })
         if (isUserCreated.acknowledged & isFolderCreated.acknowledged) {
-            const userId = isUserCreated.insertedId.toString()
-            const folderId = isFolderCreated.insertedId.toString()
-            const updateRootDirId = await userCollection.updateOne({ _id: isUserCreated.insertedId }, { $set:{rootDirId: folderId} })
-            console.log(updateRootDirId)
-            const updateUserId = await folderCollection.updateOne({ _id: isFolderCreated.insertedId }, { $set:{userId} })
-            console.log(updateUserId)
-            const dir = await mkdir(`./storage/${folderId}`)
+            // const dir = await mkdir(`./storage/${folderId}`)
             return res.status(200).json({ message: "registration successfull" })
         }
         else {
@@ -48,7 +45,18 @@ router.post("/register", async (req, res) => {
 
     }
     catch (err) {
-        res.status(500).json({ message: "register unsuccessfull" + err })
+        if(err.code == 121){
+            const message = err.errInfo?.details.schemaRulesNotSatisfied[0].propertiesNotSatisfied.map((field)=>{
+                return {name:field.propertyName,reason:field.description};
+            })
+            console.log(message)
+            return res.status(500).json({message:message,type:"registration"})
+        }
+
+        else{
+
+            res.status(500).json({ message: "register unsuccessfull" + err.message,type:"registration" })
+        }
     }
 
 

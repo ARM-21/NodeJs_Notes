@@ -45,8 +45,17 @@ export default function Register() {
       const data = await response.json();
 
       if (response.status !== 200) {
-        setError(data.message || 'Registration failed');
-        toast.error(data.message || 'Registration failed', { autoClose: 3000 });
+        console.log(data)
+        if (Array.isArray(data.message)) {
+          data.message?.forEach((field) => {
+            toast.error(field.reason || 'Registration failed', { autoClose: 3000 });
+          })
+          setError('Registration failed ! Try Again' );
+        }
+        else{
+          toast.error(data.message || 'Registration failed')
+           setError('Registration failed ! Try Again' );
+        }
         setIsLoading(false);
         return;
       }
@@ -60,6 +69,7 @@ export default function Register() {
       setError('Network error. Please try again.');
       toast.error('Network error. Please try again.', { autoClose: 3000 });
       setIsLoading(false);
+      console.log(err)
     }
   }
 
@@ -71,7 +81,7 @@ export default function Register() {
           <h2 className={styles.logoText}>Jhola</h2>
           <p className={styles.logoSubtext}>Your Personal Cloud Storage</p>
         </div>
-        
+
         <div className={styles.header}>
           <h1 className={styles.title}>Create Account</h1>
           <p className={styles.subtitle}>Start organizing your files in your digital jhola</p>
@@ -90,6 +100,7 @@ export default function Register() {
               onChange={handleChange}
               className={styles.input}
               placeholder="Enter your username"
+              // defaultValue="man"
               required
             />
           </div>
@@ -121,6 +132,7 @@ export default function Register() {
               value={userData.password}
               onChange={handleChange}
               className={styles.input}
+              // defaultValue="123456"
               placeholder="Enter your password (min 6 characters)"
               required
             />
@@ -158,18 +170,18 @@ export default function Register() {
         </div>
       </div>
 
-      <ToastContainer
+       {error && <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick
+        closeOnClick={true}
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="colored"
-      />
+      />}
     </div>
   );
 }

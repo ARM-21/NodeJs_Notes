@@ -5,7 +5,7 @@ import FileRoutes from "./routes/FileRoutes.js"
 import FolderRoutes from "./routes/FolderRoutes.mjs"
 import UserRoutes from "./routes/UserRoutes.js"
 import cookieParser from 'cookie-parser';
-import getConnection from './dbConnection.js';
+import getConnection from './config/dbConnection.js';
 import os from 'node:os'
 const port = 4000;
 const ip = getLocalIpAddress()
