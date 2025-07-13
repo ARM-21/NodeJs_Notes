@@ -1,0 +1,1 @@
+schema is structure that defines the type(datatype) of document. its validation to prevent from inserted wrong type of document 
